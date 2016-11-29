@@ -18,7 +18,6 @@ var table_colors = [
 	["yellow","green"],
 	["green","blue"]
 ];
-table = table_colors;
 
 
 $(document).ready(function() {
@@ -51,7 +50,6 @@ $(document).ready(function() {
 	$("#sample1").on("click", function(){ 
 		$('#input_text').val(arr_to_str(table_colors));
         update();
-
 	});
 	$("#sample2").on("click", function(){ 
 		$('#input_text').val(arr_to_str(table_eduardo));
@@ -79,13 +77,15 @@ $(document).ready(function() {
 		// only proceed if there are no errors
 		console.log("change");
 		console.log(JSON.stringify(p));
+		update_stats(str);
+
 		if (p.errors.length < 1){
-			
-			// update main table
 			update_table(p.data);
-			$('#stats').text( countChars($(this).val()) +" characters and "+ countWords($(this).val()) +" words" );
+			display_msg('');
 		} else {
-			console.log("papaparse ERRORS")
+			console.log("************************* Papaparse ERRORS *************************");
+			if (str !== "") display_msg('<div class="bg-danger">csv must contain at least one comma</div>');
+			update_table(p.data); // try anyway
 		}
     });
 
@@ -109,10 +109,14 @@ function update_table(arr){
 	display_table(table,"data-table",10);
 }
 
-function update_stats(arr){
-	$('#display').text("");
+function update_stats(str){
+	var report = countChars(str) +" characters and "+ countWords(str) +" words";
+	$('#stats').text(report);
 }
 
+function display_msg(msg){
+	$('#msg').html(msg);
+}
 
 
 
@@ -210,7 +214,7 @@ function create_graph(table){
  */
 function display_table(arr,id,limit){
 
-	var str = '<table class="table">';
+	var str = '<table class="table table-condensed">';
 
 	// for each row
 	$.each(arr, function( index, row ) {
