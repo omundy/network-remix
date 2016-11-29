@@ -25,53 +25,109 @@ $(document).ready(function() {
 
 
 	/**
+
+	0. init
+		load sample data in form
+
+	1. user pastes or edits form 
+		convert string to array
+		update display table
+		update network viz
+
+
+
+
+
+	/**
 	 *	Forms, buttons, etc.
 	 */
 
+	// clear
 	$("#clear").on("click", function(){ 
 		$('#input_text').val(""); 
-        $('#display').text("");
-	})
+		update();
+	});
+	// sample data
+	$("#sample1").on("click", function(){ 
+		$('#input_text').val(arr_to_str(table_colors));
+        update();
 
+	});
+	$("#sample2").on("click", function(){ 
+		$('#input_text').val(arr_to_str(table_eduardo));
+        update();
+	});
+
+
+
+
+
+
+
+
+
+	// 0. populate table with sample data on load
+	//$('#input_text').val(arr_to_str(table));
+
+	// if the textarea has changed
     $('#input_text').on('keyup change', function() {
+    	// get form value
     	var str = $(this).val();
-		$('#display').text(  );
-		var config = {
-			"dynamicTyping":true,
-			"skipEmptyLines":true
-		}
-		var p = Papa.parse(str,config);
+		// and parse it
+		var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
+		var p = Papa.parse(str,pconfig);
 		// only proceed if there are no errors
+		console.log("change");
+		console.log(JSON.stringify(p));
 		if (p.errors.length < 1){
-			console.log(JSON.stringify(p));
+			
 			// update main table
-			table = p.data;
-			draw_table(table,"data-table",10)
+			update_table(p.data);
 			$('#stats').text( countChars($(this).val()) +" characters and "+ countWords($(this).val()) +" words" );
+		} else {
+			console.log("papaparse ERRORS")
 		}
     });
 
 
 
-	/**
-	 *	Counting functions
-	 */
-
-	function countChars(str) {
-		return str.length;
-	}
-	function countWords(str) {
-		return str.split(/\s+/).length;
-	}
 
 
-
-
+	// run everything
+	$("#sample1").trigger("click");
 
 });
 
 
+function update(){
+	$('#input_text').trigger('keyup');
+}
 
+
+function update_table(arr){
+	table = arr;
+	display_table(table,"data-table",10);
+}
+
+function update_stats(arr){
+	$('#display').text("");
+}
+
+
+
+
+
+
+/**
+ *	Counting functions
+ */
+
+function countChars(str) {
+	return str.length;
+}
+function countWords(str) {
+	return str.split(/\s+/).length;
+}
 
 
 
@@ -152,12 +208,12 @@ function create_graph(table){
 /**
  *	Display CSV table in HTML
  */
-function draw_table(data,id,limit){
+function display_table(arr,id,limit){
 
 	var str = '<table class="table">';
 
 	// for each row
-	$.each(data, function( index, row ) {
+	$.each(arr, function( index, row ) {
 		// confine to limit
 		if (index <= limit){
 
@@ -189,10 +245,25 @@ function draw_table(data,id,limit){
 	$("#"+id).html(str +'</table>');
 }
 
-draw_table(table,"data-table",10)
+//display_table(table,"data-table",10)
 
 
-
+/**
+ *	Convert a multi-dimensional array to a string
+ */
+function arr_to_str(arr){
+	if (arr.length > 0){
+		var str = "", del = "";
+		// for each row
+		$.each(arr, function( index, row ) {
+			if (row.length > 0){
+				str += del + row.join();
+				del = "\n";
+			}
+		});
+	}
+	return str.trim();
+}
 
 
 
