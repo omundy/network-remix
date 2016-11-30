@@ -1,9 +1,16 @@
 
 
 // main data table; An array of arrays
-var table = [];
+var table = [],
+	input = "";
 
 // sample data
+var table_colors = [
+	["red","orange"],
+	["orange","yellow"],
+	["yellow","green"],
+	["green","blue"]
+];
 var table_eduardo = [
 	["Alicia","Eduardo"],
 	["Oscar","Eduardo"],
@@ -11,12 +18,6 @@ var table_eduardo = [
 	["Eddie","Oscar"],
 	["Oliver","Eddie"],
 	["Annie","Oliver"]
-];
-var table_colors = [
-	["red","orange"],
-	["orange","yellow"],
-	["yellow","green"],
-	["green","blue"]
 ];
 
 
@@ -31,7 +32,7 @@ $(document).ready(function() {
 	1. user pastes or edits form 
 		convert string to array
 		update display table
-		update network viz
+		update network graph
 
 
 
@@ -70,23 +71,28 @@ $(document).ready(function() {
 	// if the textarea has changed
     $('#input_text').on('keyup change', function() {
     	// get form value
-    	var str = $(this).val();
-		// and parse it
-		var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
-		var p = Papa.parse(str,pconfig);
-		// only proceed if there are no errors
-		console.log("change");
-		console.log(JSON.stringify(p));
-		update_stats(str);
+    	var str = $(this).val().trim();
+    	// if input is different
+	    if (str !== input){
+			// and parse it
+			var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
+			var p = Papa.parse(str,pconfig);
+			// only proceed if there are no errors
+			console.log("change");
+			console.log(JSON.stringify(p));
+			update_stats(str);
 
-		if (p.errors.length < 1){
-			update_table(p.data);
-			display_msg('');
-		} else {
-			console.log("************************* Papaparse ERRORS *************************");
-			if (str !== "") display_msg('<div class="bg-danger">csv must contain at least one comma</div>');
-			update_table(p.data); // try anyway
+			if (p.errors.length < 1){
+				update_table(p.data);
+				display_msg('');
+				update_graph(table);
+			} else {
+				console.log("************************* Papaparse ERRORS *************************");
+				if (str !== "") display_msg('<div class="bg-danger">csv must contain at least one comma</div>');
+				update_table(p.data); // try anyway
+			}
 		}
+		input = str.trim();
     });
 
 
@@ -120,6 +126,22 @@ function display_msg(msg){
 
 
 
+function update_graph(table){
+
+	var dataset = create_graph(table);
+	console.log(JSON.stringify(dataset))
+
+	/*  
+		dataset = {"nodes":[{"label":"red","r":12},{"label":"orange","r":15},{"label":"yellow","r":15},{"label":"green","r":14},{"label":"blue","r":11}],
+		"links":[{"source":0,"target":1},{"source":1,"target":2},{"source":2,"target":3},{"source":3,"target":4}]};
+	 */ 
+
+	   // alert(JSON.stringify(data))
+	    
+	 clear_graph();
+	 draw_graph(dataset) ;
+}	 
+
 
 
 /**
@@ -130,7 +152,7 @@ function countChars(str) {
 	return str.length;
 }
 function countWords(str) {
-	return str.split(/\s+/).length;
+	return str.split(/[\s,]+/).length;
 }
 
 
@@ -151,7 +173,7 @@ function create_graph(table){
 	console.log(JSON.stringify(table));
 
 	// dataset to build
-	var dataset = { "nodes": [], "edges": [] };
+	var dataset = { "nodes": [], "links": [] };
 	// track nodes
 	var node_order = [];
 
@@ -167,8 +189,8 @@ function create_graph(table){
 			node_order.push(n1);
 			// and create it in dataset
 			dataset.nodes.push({ 
-				"name": n1, 
-				"value": 1 
+				"label": n1, 
+				"r": 1 
 			});
 		} else {
 			// else update 
@@ -182,8 +204,8 @@ function create_graph(table){
 			node_order.push(n2);
 			// and create it in dataset
 			dataset.nodes.push({ 
-				"name": n2, 
-				"value": 1 
+				"label": n2, 
+				"r": 1 
 			});
 		} else {
 			// else update 
@@ -192,7 +214,7 @@ function create_graph(table){
 		}
 
 		// push edges 
-		dataset.edges.push({ 
+		dataset.links.push({ 
 			"source": node_order.indexOf(n1), 
 			"target": node_order.indexOf(n2) 
 		});
@@ -202,9 +224,7 @@ function create_graph(table){
 	}
 	return dataset;
 }
-//var dataset = create_graph(table);
-//console.log(JSON.stringify(dataset))
-//viz(dataset)
+
 
 
 
@@ -249,7 +269,6 @@ function display_table(arr,id,limit){
 	$("#"+id).html(str +'</table>');
 }
 
-//display_table(table,"data-table",10)
 
 
 /**
@@ -272,19 +291,19 @@ function arr_to_str(arr){
 
 
 
-/*
 
+/**
+ *
 
+function graph(data){
 
+	var width = 500, height = 500;
 
-function viz(data){
-
-	var width = 1500, height = 1500;
-
-	var svg = d3.select("body")
-		.append("svg")
+	// add svg to page
+	var svg = d3.select("#graph").append("svg")
 		.attr("width", width)
 		.attr("height", height);
+
 
 	var nodes = svg.selectAll("circle.node")
 		.data(data.nodes)
@@ -293,6 +312,15 @@ function viz(data){
 		.attr("class", "node")
 		.attr("r", 12);
 
+
+var simulation = d3.forceSimulation()
+  .force("link", d3.forceLink().id(function(d) { return d.id; }))
+  .force("charge", d3.forceManyBody())
+  .force("center", d3.forceCenter(width / 2, height / 2));
+
+
+
+
 	var edges = svg.selectAll("line.link") 
 		.data(data.edges)
 		.enter()
@@ -300,13 +328,7 @@ function viz(data){
 		.style("stroke","black");
 
 
-	var force = d3.layout.force()
-		.nodes(data.nodes)
-		.links(data.edges)
-		.size([width, height])
-		.linkDistance(30)
-		.charge(-120)
-		.start();
+/*
 
 	force.on("tick", function() {
 		edges.attr("x1", function(d) { return d.source.x; })
@@ -319,6 +341,141 @@ function viz(data){
 
 }
 
-
 */
+
+
+
+
+
+
+
+/**
+ *	Draw the network graph
+ *	Based on https://bl.ocks.org/shimizu/e6209de87cdddde38dadbb746feaf3a3	
+ */
+   
+// chart options
+var width = 500, height = 500,
+	margin = { top:0, left:0, bottom:0, right:0 }
+
+var chartWidth = width - (margin.left+margin.right)
+var chartHeight = height - (margin.top+margin.bottom)
+
+// add svg to page
+var svg = d3.select("#graph").append("svg")
+	.attr("width", width)
+	.attr("height", height);
+var chartLayer = svg.append("g")
+	.classed("chartLayer", true)
+	.attr("width", chartWidth)
+    .attr("height", chartHeight)
+    .attr("transform", "translate("+[margin.left, margin.top]+")");
+
+
+
+
+
+
+
+function clear_graph(){
+	svg.selectAll("*").remove();
+}
+
+
+function draw_graph(data) {
+
+	console.log(data)
+     
+    var simulation = d3.forceSimulation()
+        .force("link", d3.forceLink().id(function(d) { return d.index }))
+        .force("collide",d3.forceCollide( function(d){ return d.r + 16 }).iterations(16) )
+        .force("charge", d3.forceManyBody())
+        .force("center", d3.forceCenter(chartWidth / 2, chartWidth / 2))
+        .force("y", d3.forceY(0))
+        .force("x", d3.forceX(0))
+
+    var link = svg.append("g")
+        .attr("class", "links")
+        .selectAll("line")
+        .data(data.links)
+        .enter()
+        .append("line")
+        .attr("stroke", "black")
+    
+    var node = svg.append("g")
+        .attr("class", "nodes")
+        .selectAll("circle")
+        .data(data.nodes)
+        .enter().append("circle")
+        .attr("r", function(d){  return d.r * 6 })
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));    
+    
+	// create div for the tooltip
+	var tooltip = d3.select("body").append("div")	
+	    .attr("class", "tooltip")				
+	    .style("opacity", 0);
+
+    svg.selectAll("circle")	
+		.on("mouseover", function(d) {
+			//console.log(d3.select(this).attr("id")); // log circle id
+			// show tooltip
+			tooltip.transition()
+				.duration(200)
+				.style("opacity", .9);
+			tooltip.html( "label: "+ d.label +"<br>r: "+ d.r +"<br>index: "+ d.index )
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY - 50) + "px");
+		})
+		.on("mouseout", function(d) {
+			// hide tooltip
+			tooltip.transition()
+				.duration(500)
+				.style("opacity", 0);
+		});
+    
+    var ticked = function() {
+        link
+            .attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+
+        node
+            .attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
+    }  
+    
+    simulation
+        .nodes(data.nodes)
+        .on("tick", ticked);
+
+    simulation.force("link")
+        .links(data.links);    
+    
+    
+    
+    function dragstarted(d) {
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+    
+    function dragged(d) {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+    
+    function dragended(d) {
+        if (!d3.event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    } 
+            
+}
+
+
+
 
