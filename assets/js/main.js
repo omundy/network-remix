@@ -2,7 +2,7 @@
 
 // main data table; An array of arrays
 var table = [],
-	input = "";
+	lastinput = "";
 
 // sample data
 var table_colors = [
@@ -23,31 +23,30 @@ var table_eduardo = [
 
 $(document).ready(function() {
 
+	/** 
 
-	/**
+	ORDER OF USE
 
-	0. init
+	0. init - Page loads
 		load sample data in form
 
-	1. user pastes or edits form 
-		convert string to array
+	1. user pastes into or edits form 
+		convert string to CSV/JSON
 		update display table
 		update network graph
-
-
-
+	*/
 
 
 	/**
 	 *	Forms, buttons, etc.
 	 */
 
-	// clear
+	// btn: clear
 	$("#clear").on("click", function(){ 
 		$('#input_text').val(""); 
 		update();
 	});
-	// sample data
+	// btn: sample data
 	$("#sample1").on("click", function(){ 
 		$('#input_text').val(arr_to_str(table_colors));
         update();
@@ -57,31 +56,21 @@ $(document).ready(function() {
         update();
 	});
 
-
-
-
-
-
-
-
-
-	// 0. populate table with sample data on load
-	//$('#input_text').val(arr_to_str(table));
-
-	// if the textarea has changed
+	// listen for keyup or change in textarea
     $('#input_text').on('keyup change', function() {
     	// get form value
     	var str = $(this).val().trim();
-    	// if input is different
-	    if (str !== input){
+    	// if input is different then handle it
+	    if (str !== lastinput){
 			// and parse it
+			// documentation: http://papaparse.com/docs
 			var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
 			var p = Papa.parse(str,pconfig);
 			// only proceed if there are no errors
-			console.log("change");
+			//console.log("change");
 			console.log(JSON.stringify(p));
 			update_stats(str);
-
+			// if no errors
 			if (p.errors.length < 1){
 				update_table(p.data);
 				display_msg('');
@@ -91,8 +80,10 @@ $(document).ready(function() {
 				if (str !== "") display_msg('<div class="bg-danger">csv must contain at least one comma</div>');
 				update_table(p.data); // try anyway
 			}
+		} else if (str == ""){
+			clear_graph();
 		}
-		input = str.trim();
+		lastinput = str.trim(); // update lastinput
     });
 
 
@@ -115,10 +106,10 @@ function update_table(arr){
 	display_table(table,"data-table",10);
 }
 
-function update_stats(str){
-	var report = countChars(str) +" characters and "+ countWords(str) +" words";
-	$('#stats').text(report);
-}
+//function update_stats(str){
+	//var report = countChars(str) +" characters and "+ countWords(str) +" words";
+	//$('#stats').text(report);
+//}
 
 function display_msg(msg){
 	$('#msg').html(msg);
@@ -143,17 +134,6 @@ function update_graph(table){
 }	 
 
 
-
-/**
- *	Counting functions
- */
-
-function countChars(str) {
-	return str.length;
-}
-function countWords(str) {
-	return str.split(/[\s,]+/).length;
-}
 
 
 
@@ -229,64 +209,6 @@ function create_graph(table){
 
 
 
-/**
- *	Display CSV table in HTML
- */
-function display_table(arr,id,limit){
-
-	var str = '<table class="table table-condensed">';
-
-	// for each row
-	$.each(arr, function( index, row ) {
-		// confine to limit
-		if (index <= limit){
-
-			console.log(row);
-
-			// create headers with keys on first row only
-			if (index === 0){ 
-				str += "<thead><th>#</th>";
-				$.each(row, function( key, header ) {
-					str += "<th>col"+ key +"</th>"
-				});
-				str += "</thead>"
-			}
-			
-			// all other rows
-			str += "<tr><td>"+ index +"</td>";
-			$.each(row, function( key, val ) {
-				str += "<td>"+ val +"</td>"
-			});
-			str += "</tr>"
-
-		} else {
-			// break from loop
-			//$("#"+id).after("... only "+ limit +" rows displayed");
-			return false;
-		}
-		
-	});
-	$("#"+id).html(str +'</table>');
-}
-
-
-
-/**
- *	Convert a multi-dimensional array to a string
- */
-function arr_to_str(arr){
-	if (arr.length > 0){
-		var str = "", del = "";
-		// for each row
-		$.each(arr, function( index, row ) {
-			if (row.length > 0){
-				str += del + row.join();
-				del = "\n";
-			}
-		});
-	}
-	return str.trim();
-}
 
 
 
@@ -385,7 +307,8 @@ function clear_graph(){
 function draw_graph(data) {
 
 	console.log(data)
-     
+    
+
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.index }))
         .force("collide",d3.forceCollide( function(d){ return d.r + 16 }).iterations(16) )
