@@ -22,13 +22,13 @@ function load_csv(file,callback){
 /**
  *	Convert a multi-dimensional array to a string
  */
-function arr_to_str(arr){
+function arr_to_str(arr,delimiter=","){
 	if (arr.length > 0){
 		var str = "", del = "";
 		// for each row
 		$.each(arr, function( index, row ) {
 			if (row.length > 0){
-				str += del + row.join();
+				str += del + row.join(delimiter);
 				del = "\n";
 			}
 		});

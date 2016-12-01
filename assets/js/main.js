@@ -56,6 +56,10 @@ $(document).ready(function() {
 		$('#input_text').val(arr_to_str(table_eduardo));
         update();
 	});
+	$("#sample3").on("click", function(){ 
+		$('#input_text').val(arr_to_str(table_eduardo,"\t"));
+        update();
+	});
 
 	// listen for keyup or change in textarea
     $('#input_text').on('keyup change', function() {
@@ -81,7 +85,8 @@ $(document).ready(function() {
 				if (str !== "") display_msg('<div class="bg-danger">csv must contain at least one comma</div>');
 				update_table(p.data); // try anyway
 			}
-		}if (str == ""){
+		}
+		if (str == ""){
 			svg.selectAll("*").remove();
 		}
 		lastinput = str.trim(); // update lastinput
