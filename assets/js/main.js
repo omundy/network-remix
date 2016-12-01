@@ -44,6 +44,7 @@ $(document).ready(function() {
 	// btn: clear
 	$("#clear").on("click", function(){ 
 		$('#input_text').val(""); 
+		svg.selectAll("*").remove();
 		update();
 	});
 	// btn: sample data
@@ -68,7 +69,7 @@ $(document).ready(function() {
 			var p = Papa.parse(str,pconfig);
 			// only proceed if there are no errors
 			//console.log("change");
-			console.log(JSON.stringify(p));
+			//console.log(JSON.stringify(p));
 			update_stats(str);
 			// if no errors
 			if (p.errors.length < 1){
@@ -80,8 +81,8 @@ $(document).ready(function() {
 				if (str !== "") display_msg('<div class="bg-danger">csv must contain at least one comma</div>');
 				update_table(p.data); // try anyway
 			}
-		} else if (str == ""){
-			clear_graph();
+		}if (str == ""){
+			svg.selectAll("*").remove();
 		}
 		lastinput = str.trim(); // update lastinput
     });
@@ -120,7 +121,7 @@ function display_msg(msg){
 function update_graph(table){
 
 	var dataset = create_graph(table);
-	console.log(JSON.stringify(dataset))
+	//console.log(JSON.stringify(dataset))
 
 	/*  
 		dataset = {"nodes":[{"label":"red","r":12},{"label":"orange","r":15},{"label":"yellow","r":15},{"label":"green","r":14},{"label":"blue","r":11}],
@@ -199,9 +200,9 @@ function create_graph(table){
 			"target": node_order.indexOf(n2) 
 		});
 
-		// reporting
-		console.log(JSON.stringify(dataset));
 	}
+	// reporting
+	console.log(JSON.stringify(dataset));
 	return dataset;
 }
 
@@ -287,6 +288,7 @@ var chartHeight = height - (margin.top+margin.bottom)
 var svg = d3.select("#graph").append("svg")
 	.attr("width", width)
 	.attr("height", height);
+
 var chartLayer = svg.append("g")
 	.classed("chartLayer", true)
 	.attr("width", chartWidth)
@@ -294,7 +296,10 @@ var chartLayer = svg.append("g")
     .attr("transform", "translate("+[margin.left, margin.top]+")");
 
 
-
+// create div for the tooltip
+var tooltip = d3.select("body").append("div")	
+    .attr("class", "tooltip")				
+    .style("opacity", 0);
 
 
 
@@ -306,7 +311,7 @@ function clear_graph(){
 
 function draw_graph(data) {
 
-	console.log(data)
+	//console.log(data)
     
 
     var simulation = d3.forceSimulation()
@@ -336,10 +341,7 @@ function draw_graph(data) {
             .on("drag", dragged)
             .on("end", dragended));    
     
-	// create div for the tooltip
-	var tooltip = d3.select("body").append("div")	
-	    .attr("class", "tooltip")				
-	    .style("opacity", 0);
+
 
     svg.selectAll("circle")	
 		.on("mouseover", function(d) {
