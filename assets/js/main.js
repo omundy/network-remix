@@ -366,6 +366,17 @@ function draw_graph(data) {
 				.style("opacity", 0);
 		});
     
+	var texts = svg.selectAll("text")
+    	.data(data.nodes)
+    	.enter()
+    	.append("text")
+    	.text(function(d){ return d.label; })
+			.attr("font-family", "sans-serif")
+			.attr("font-size", "11px")
+			.attr("fill", "red");
+
+    	
+
     var ticked = function() {
         link
             .attr("x1", function(d) { return d.source.x; })
@@ -376,6 +387,11 @@ function draw_graph(data) {
         node
             .attr("cx", function(d) { return d.x; })
             .attr("cy", function(d) { return d.y; });
+
+        texts
+        	.attr("x", function(d){ return d.x +5; })
+	    	.attr("y", function(d){ return d.y -5; })	
+        	    
     }  
     
     simulation
@@ -384,6 +400,8 @@ function draw_graph(data) {
 
     simulation.force("link")
         .links(data.links);    
+    
+
     
     
     
