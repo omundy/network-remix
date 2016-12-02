@@ -181,7 +181,7 @@ function create_graph(table){
 		} else {
 			// else update 
 			var num = node_order.indexOf(n1)
-			dataset.nodes[num].value ++;
+			dataset.nodes[num].r ++;
 		}
 
 		// if node2 does not exist 
@@ -196,7 +196,7 @@ function create_graph(table){
 		} else {
 			// else update 
 			var num = node_order.indexOf(n2)
-			dataset.nodes[num].value ++;
+			dataset.nodes[num].r ++;
 		}
 
 		// push edges 
@@ -334,13 +334,18 @@ function draw_graph(data) {
         .enter()
         .append("line")
         .attr("stroke", "black")
+
+	// create a linear scale for radius
+	var rScale = d3.scaleLinear()
+		.domain([0, d3.max(data.nodes, function(d) { return d.r; })])
+		.range([1, 15]);
     
     var node = svg.append("g")
         .attr("class", "nodes")
         .selectAll("circle")
         .data(data.nodes)
         .enter().append("circle")
-        .attr("r", function(d){  return d.r * 6 })
+        .attr("r", function(d){ return rScale(d.r) })
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
