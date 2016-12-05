@@ -21,6 +21,9 @@ var table_eduardo = [
 ];
 
 
+
+
+
 $(document).ready(function() {
 
 	/** 
@@ -314,18 +317,27 @@ function clear_graph(){
 }
 
 
+
+
 function draw_graph(data) {
 
 	//console.log(data)
     
+    // d3v4-force documentation: 
+    // https://github.com/d3/d3-force/blob/master/README.md
+
+	// many-body force applies mutually to all nodes
+    var manyBody = d3.forceManyBody()
+    	.strength(-500); // strength accessor to the specified number or function. + nodes attract / - nodes repel. Default -30
 
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.index }))
         .force("collide",d3.forceCollide( function(d){ return d.r + 16 }).iterations(16) )
-        .force("charge", d3.forceManyBody())
+        .force("charge", manyBody)
         .force("center", d3.forceCenter(chartWidth / 2, chartWidth / 2))
         .force("y", d3.forceY(0))
         .force("x", d3.forceX(0))
+
 
     var link = svg.append("g")
         .attr("class", "links")
@@ -339,13 +351,23 @@ function draw_graph(data) {
 	var rScale = d3.scaleLinear()
 		.domain([0, d3.max(data.nodes, function(d) { return d.r; })])
 		.range([1, 15]);
+
+
+var rColor = Math.floor(Math.random()*255);
+var nodeFill = "rgba("+ rColor +","+ rColor +",255, .75)";
+var nodeStroke = "rgba(255, 0," + rColor +", 0.25)";
+var textFill = "rgba(0,0,0,1)";
+
     
     var node = svg.append("g")
         .attr("class", "nodes")
         .selectAll("circle")
         .data(data.nodes)
         .enter().append("circle")
-        .attr("r", function(d){ return rScale(d.r) })
+        	.attr("r", function(d){ return rScale(d.r) })
+			.attr("fill",nodeFill)
+			.attr("stroke",nodeStroke)
+			.attr("stroke-width", 5)
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
@@ -378,7 +400,7 @@ function draw_graph(data) {
     	.text(function(d){ return d.label; })
 			.attr("font-family", "sans-serif")
 			.attr("font-size", "11px")
-			.attr("fill", "red");
+			.attr("fill", textFill);
 
     	
 
