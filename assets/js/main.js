@@ -142,21 +142,17 @@ function update_graph(table){
 */
 function prepare_graph_data(table){
 
+	console.log("prepare_graph_data()");
+
 	/*  
 		dataset = {"nodes":[{"label":"red","r":12},{"label":"orange","r":15},{"label":"yellow","r":15},{"label":"green","r":14},{"label":"blue","r":11}],
 				   "links":[{"source":0,"target":1},{"source":1,"target":2},{"source":2,"target":3},{"source":3,"target":4}]};
 	 */ 
 
-
-	console.log("prepare_graph_data() --> " + JSON.stringify(table) );
-
 	// dataset to build
 	var dataset = { "nodes": [], "links": [] };
-	var dataset_new = { "nodes": [], "links": [] };
 	// track nodes
 	var node_order = [];
-	var node_order_new = [];
-
 
 	// make a two-column table
 	var twoColTable = [];
@@ -175,7 +171,9 @@ function prepare_graph_data(table){
 			twoColTable.push(table[row])
 		}
 	}
-	//console.log("twoColTable: "+ JSON.stringify(twoColTable));
+	// reporting
+	console.log("  input --> original table --> " + JSON.stringify(table) );
+	console.log("  input --> two column table --> " + JSON.stringify(twoColTable) );
 
 	table = twoColTable;
 
@@ -188,88 +186,39 @@ function prepare_graph_data(table){
 			//console.log(row,col,node);
 
 			// if node does not yet exist 
-			if (node_order_new.indexOf(node) < 0){
+			if (node_order.indexOf(node) < 0){
 				// track it
-				node_order_new.push(node);
-				// and create it in dataset
-				dataset_new.nodes.push({ 
+				node_order.push(node);
+				// add it to dataset
+				dataset.nodes.push({ 
 					"label": node, 
 					"r": 1 
 				});
 			} else {
-				// else update 
-				var num = node_order_new.indexOf(node)
-				dataset_new.nodes[num].r ++;
+				// else update dataset
+				var num = node_order.indexOf(node)
+				dataset.nodes[num].r ++;
 			}
 
 			col = parseInt(col); // make it an integer
-
-			
-			console.log("node_order_new: "+ JSON.stringify(node_order_new));
+			//console.log("node_order: "+ JSON.stringify(node_order));
 
 			// if > 1 col per row && current is not the last col then create link
 			if (col > 0 && table[row].length >= 2 ){
 				// push edges 
-				dataset_new.links.push({ 
-					"source": node_order_new.indexOf(table[row][col-1]), // new node
-					"target": node_order_new.indexOf(table[row][col]) // next node 
+				dataset.links.push({ 
+					"source": node_order.indexOf(table[row][col-1]), // new node
+					"target": node_order.indexOf(table[row][col]) // next node 
 				});
 			}	
 		}
 	}
 
-/* OLD METHOD: MARK FOR DELETION
-
-	// loop through each row of table
-	for (var row in table){
-
-		var n1 = table[row][0].toLowerCase();
-		var n2 = table[row][1].toLowerCase();
-
-		// if node1 does not exist 
-		if (node_order.indexOf(n1) < 0){
-			// track it
-			node_order.push(n1);
-			// and create it in dataset
-			dataset.nodes.push({ 
-				"label": n1, 
-				"r": 1 
-			});
-		} else {
-			// else update 
-			var num = node_order.indexOf(n1)
-			dataset.nodes[num].r ++;
-		}
-
-		// if node2 does not exist 
-		if (node_order.indexOf(n2) < 0){
-			// track it
-			node_order.push(n2);
-			// and create it in dataset
-			dataset.nodes.push({ 
-				"label": n2, 
-				"r": 1 
-			});
-		} else {
-			// else update 
-			var num = node_order.indexOf(n2)
-			dataset.nodes[num].r ++;
-		}
-
-		// push edges 
-		dataset.links.push({ 
-			"source": node_order.indexOf(n1), 
-			"target": node_order.indexOf(n2) 
-		});
-
-	}
-*/	
 	// reporting
-	console.log("nodes (new): "+ JSON.stringify(dataset_new.nodes));
-	console.log("nodes (old): "+ JSON.stringify(dataset.nodes));
-	console.log("links (new): "+ JSON.stringify(dataset_new.links));
-	console.log("links (old): "+ JSON.stringify(dataset.links));
-	return dataset_new;
+	console.log("  output --> nodes: "+ JSON.stringify(dataset.nodes));
+	console.log("  output --> links: "+ JSON.stringify(dataset.links));
+	
+	return dataset;
 }
 
 
