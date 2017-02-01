@@ -40,6 +40,10 @@ function main(){
 		$('#input_text').val(arr_to_str(table_colors));
         update();
 	});
+	$("#sample1_odd").on("click", function(){ 
+		$('#input_text').val(arr_to_str(table_colors_odd_columns));
+        update();
+	});
 	$("#sample2").on("click", function(){ 
 		$('#input_text').val(arr_to_str(table_eduardo));
         update();
@@ -144,18 +148,83 @@ function prepare_graph_data(table){
 	 */ 
 
 
-	console.log(JSON.stringify(table));
+	console.log("prepare_graph_data() --> " + JSON.stringify(table) );
 
 	// dataset to build
 	var dataset = { "nodes": [], "links": [] };
+	var dataset_new = { "nodes": [], "links": [] };
 	// track nodes
 	var node_order = [];
+	var node_order_new = [];
+
+
+	// make a two-column table
+	var twoColTable = [];
+	// for each row in table
+	for (var row in table){
+		// if the row has more than two relationships
+		if (table[row].length > 2){
+			// for each col in row
+			for (var col in table[row]){
+				col = parseInt(col);
+				if ( col < table[row].length-1 ){
+					twoColTable.push([ table[row][col], table[row][col+1] ]);
+				}
+			}
+		} else {
+			twoColTable.push(table[row])
+		}
+	}
+	//console.log("twoColTable: "+ JSON.stringify(twoColTable));
+
+	table = twoColTable;
+
+	// for each row in table
+	for (var row in table){
+		// for each col in row
+		for (var col in table[row]){
+			// clean node name
+			var node = table[row][col].trim().toLowerCase();	
+			//console.log(row,col,node);
+
+			// if node does not yet exist 
+			if (node_order_new.indexOf(node) < 0){
+				// track it
+				node_order_new.push(node);
+				// and create it in dataset
+				dataset_new.nodes.push({ 
+					"label": node, 
+					"r": 1 
+				});
+			} else {
+				// else update 
+				var num = node_order_new.indexOf(node)
+				dataset_new.nodes[num].r ++;
+			}
+
+			col = parseInt(col); // make it an integer
+
+			
+			console.log("node_order_new: "+ JSON.stringify(node_order_new));
+
+			// if > 1 col per row && current is not the last col then create link
+			if (col > 0 && table[row].length >= 2 ){
+				// push edges 
+				dataset_new.links.push({ 
+					"source": node_order_new.indexOf(table[row][col-1]), // new node
+					"target": node_order_new.indexOf(table[row][col]) // next node 
+				});
+			}	
+		}
+	}
+
+/* OLD METHOD: MARK FOR DELETION
 
 	// loop through each row of table
-	for (i in table){
+	for (var row in table){
 
-		var n1 = table[i][0].toLowerCase();
-		var n2 = table[i][1].toLowerCase();
+		var n1 = table[row][0].toLowerCase();
+		var n2 = table[row][1].toLowerCase();
 
 		// if node1 does not exist 
 		if (node_order.indexOf(n1) < 0){
@@ -194,9 +263,13 @@ function prepare_graph_data(table){
 		});
 
 	}
+*/	
 	// reporting
-	console.log(JSON.stringify(dataset));
-	return dataset;
+	console.log("nodes (new): "+ JSON.stringify(dataset_new.nodes));
+	console.log("nodes (old): "+ JSON.stringify(dataset.nodes));
+	console.log("links (new): "+ JSON.stringify(dataset_new.links));
+	console.log("links (old): "+ JSON.stringify(dataset.links));
+	return dataset_new;
 }
 
 
@@ -316,6 +389,8 @@ function redraw_graph(data) {
 
 
 function draw_graph(data) {
+
+	clear_graph();
 
 	//console.log(data)
     

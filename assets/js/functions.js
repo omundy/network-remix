@@ -1,7 +1,10 @@
 
-
-
-
+/**
+ *  These functions are in the public domain
+ *  Owen Mundy owenmundy.com
+ */
+ 
+ 
 
 
 /**
@@ -17,6 +20,19 @@ function load_csv(file,callback){
 }
 
 
+
+/**
+ *  Make sure a property or method is:
+ *  1. declared
+ *  2. is !== null, undefined, NaN, empty string (""), 0, false
+ */
+function prop(val){
+    if (typeof val !== 'undefined' && val){ 
+        return true; 
+    } else { 
+        return false; 
+    }
+}
 
 
 /**
