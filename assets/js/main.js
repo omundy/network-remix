@@ -4,27 +4,12 @@
 var table = [],
 	lastinput = "";
 
-// sample data
-var table_colors = [
-	["red","orange"],
-	["orange","yellow"],
-	["yellow","green"],
-	["green","blue"]
-];
-var table_eduardo = [
-	["Alicia","Eduardo"],
-	["Oscar","Eduardo"],
-	["Annie","Oscar"],
-	["Eddie","Oscar"],
-	["Oliver","Eddie"],
-	["Annie","Oliver"]
-];
 
+$(document).ready(function() { 
+	main(); 
+});
 
-
-
-
-$(document).ready(function() {
+function main(){
 
 	/** 
 
@@ -66,43 +51,47 @@ $(document).ready(function() {
 
 	// listen for keyup or change in textarea
     $('#input_text').on('keyup change', function() {
-    	// get form value
-    	var str = $(this).val().trim();
-    	// if input is different then handle it
-	    if (str !== lastinput){
-			// and parse it
-			// documentation: http://papaparse.com/docs
-			var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
-			var p = Papa.parse(str,pconfig);
-			// only proceed if there are no errors
-			//console.log("change");
-			//console.log(JSON.stringify(p));
-			update_stats(str);
-			// if no errors
-			if (p.errors.length < 1){
-				update_table(p.data);
-				display_msg('');
-				update_graph(table);
-			} else {
-				console.log("************************* Papaparse ERRORS *************************");
-				if (str !== "") display_msg('<div class="bg-danger">csv must contain at least one comma</div>');
-				update_table(p.data); // try anyway
-			}
-		}
-		if (str == ""){
-			svg.selectAll("*").remove();
-		}
-		lastinput = str.trim(); // update lastinput
+    	eval_input($(this));
     });
 
-
-
-
-
-	// run everything
+	// start
 	$("#sample1").trigger("click");
+};
 
-});
+
+function eval_input(form){
+
+	// get form value
+	var str = form.val().trim();
+	// if input is different then handle it
+    if (str !== lastinput){
+		// and parse it using papaparse: http://papaparse.com/docs
+		var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
+		var p = Papa.parse(str,pconfig);
+		// only proceed if there are no errors
+		//console.log("INPUT CHANGE: "JSON.stringify(p));
+		update_stats(str);
+		// if no errors
+		if (p.errors.length < 1){
+			update_table(p.data);
+			display_msg('');
+			update_graph(table);
+		} else {
+			console.log("************************* Papaparse ERRORS *************************");
+			console.log(JSON.stringify(p.errors));
+			if (str !== "") display_msg('<div class="bg-danger">csv must contain at least one comma</div>');
+			update_table(p.data); // try anyway
+		}
+	}
+	if (str == ""){
+		svg.selectAll("*").remove();
+	}
+	lastinput = str.trim(); // update lastinput
+
+}
+
+
+
 
 
 function update(){
@@ -127,19 +116,9 @@ function display_msg(msg){
 
 
 function update_graph(table){
-
-	var dataset = create_graph(table);
+	var dataset = prepare_graph_data(table);
 	//console.log(JSON.stringify(dataset))
-
-	/*  
-		dataset = {"nodes":[{"label":"red","r":12},{"label":"orange","r":15},{"label":"yellow","r":15},{"label":"green","r":14},{"label":"blue","r":11}],
-		"links":[{"source":0,"target":1},{"source":1,"target":2},{"source":2,"target":3},{"source":3,"target":4}]};
-	 */ 
-
-	   // alert(JSON.stringify(data))
-	    
-	 clear_graph();
-	 draw_graph(dataset) ;
+	draw_graph(dataset) ;
 }	 
 
 
@@ -148,7 +127,7 @@ function update_graph(table){
 
 
 /**
-*	create_graph() from table data
+*	prepare_graph_data() from table data
 *	@table array
 *	@description 
 *	1. takes as input an array of arrays
@@ -157,7 +136,13 @@ function update_graph(table){
 		{"nodes":[{"name":"red","value":1},{"name":"orange","value":1}],"edges":[{"source":0,"target":1}]}
 *	3. Tracks occurrences and increments values 
 */
-function create_graph(table){
+function prepare_graph_data(table){
+
+	/*  
+		dataset = {"nodes":[{"label":"red","r":12},{"label":"orange","r":15},{"label":"yellow","r":15},{"label":"green","r":14},{"label":"blue","r":11}],
+				   "links":[{"source":0,"target":1},{"source":1,"target":2},{"source":2,"target":3},{"source":3,"target":4}]};
+	 */ 
+
 
 	console.log(JSON.stringify(table));
 
@@ -317,6 +302,17 @@ function clear_graph(){
 }
 
 
+// USE THIS TO MAKE A REDRAW FUNCTION
+// from : http://www.coppelia.io/2014/07/an-a-to-z-of-extra-features-for-the-d3-force-layout/
+//Restart the visualisation after any node and link changes
+function redraw_graph(data) {
+	link = link.data(data.links);
+	link.exit().remove();
+	link.enter().insert("line", ".node").attr("class", "link");
+	node = node.data(data.nodes);
+	node.enter().insert("circle", ".cursor").attr("class", "node").attr("r", 5).call(force.drag);
+	force.start();
+}
 
 
 function draw_graph(data) {
