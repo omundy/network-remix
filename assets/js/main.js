@@ -2,7 +2,8 @@
 
 // main data table; An array of arrays
 var table = [],
-	lastinput = "";
+	lastinput = "",
+	formatSelected = "format-table";
 
 
 $(document).ready(function() { 
@@ -33,42 +34,87 @@ function main(){
 	$("#clear").on("click", function(){ 
 		$('#input_text').val(""); 
 		svg.selectAll("*").remove();
-		update();
+        eval_input();
 	});
 	// btn: sample data
 	$("#sample1").on("click", function(){ 
+		update_format("#format-table");
 		$('#input_text').val(arr_to_str(table_colors));
-        update();
+        eval_input();
 	});
 	$("#sample1_odd").on("click", function(){ 
+		update_format("#format-table");
 		$('#input_text').val(arr_to_str(table_colors_odd_columns));
-        update();
+        eval_input();
 	});
 	$("#sample2").on("click", function(){ 
+		update_format("#format-table");
 		$('#input_text').val(arr_to_str(table_eduardo));
-        update();
+        eval_input();
 	});
 	$("#sample3").on("click", function(){ 
+		update_format("#format-table");
 		$('#input_text').val(arr_to_str(table_eduardo,"\t"));
-        update();
+        eval_input();
+	});
+	$("#sample4").on("click", function(){ 
+		update_format("#format-plain");
+		$('#input_text').val(moby_dick_36);
+        eval_input();
+	});
+	$("#sample5").on("click", function(){
+		update_format("#format-plain"); 
+		$('#input_text').val(minima_moralia);
+        eval_input();
 	});
 
 	// listen for keyup or change in textarea
     $('#input_text').on('keyup change', function() {
-    	eval_input($(this));
+        eval_input();
     });
-
+	// listen for format change
+	$(document).on('change', '#format-options input', function (e) {
+	    formatSelected = $('#format-options .active input').attr('id');
+	    //console.log("format updated: "+formatSelected);
+	});
 	// start
-	$("#sample1").trigger("click");
+	update_format("#format-plain");
+	$("#sample4").trigger("click");
 };
 
 
+
+/**
+ *	Change the format to match incoming text
+ */
+function update_format(newId){
+	$('#format-options .active ').removeClass('active');
+	$(newId).parent().addClass('active');
+	formatSelected = $('#format-options .active input').attr('id');
+	console.log("format updated: "+formatSelected);
+}
+
 function eval_input(form){
 
-	// get form value
-	var str = form.val().trim();
-	// if input is different then handle it
+	var str = $('#input_text').val().trim();
+
+
+
+	// is this a formatted CSV/TSV or plain text?
+	if (formatSelected == "format-plain"){
+		str = parseText(str);
+	} else if (formatSelected == "format-table"){
+		// continue
+	}
+	
+
+
+
+
+	// if input is different then continue
     if (str !== lastinput){
+
+	
 		// and parse it using papaparse: http://papaparse.com/docs
 		var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
 		var p = Papa.parse(str,pconfig);
@@ -95,12 +141,13 @@ function eval_input(form){
 }
 
 
+function text_to_table(){
 
-
-
-function update(){
-	$('#input_text').trigger('keyup');
+	//////.toLowerCase()
 }
+
+
+
 
 
 function update_table(arr){
@@ -108,10 +155,7 @@ function update_table(arr){
 	display_table(table,"data-table",10);
 }
 
-//function update_stats(str){
-	//var report = countChars(str) +" characters and "+ countWords(str) +" words";
-	//$('#stats').text(report);
-//}
+
 
 function display_msg(msg){
 	$('#msg').html(msg);
@@ -122,6 +166,11 @@ function display_msg(msg){
 function update_graph(table){
 	var dataset = prepare_graph_data(table);
 	//console.log(JSON.stringify(dataset))
+
+	clear_graph();
+	// instead look to see if it exists and redraw
+
+	//redraw_graph(dataset);
 	draw_graph(dataset) ;
 }	 
 
@@ -144,15 +193,8 @@ function prepare_graph_data(table){
 
 	console.log("prepare_graph_data()");
 
-	/*  
-		dataset = {"nodes":[{"label":"red","r":12},{"label":"orange","r":15},{"label":"yellow","r":15},{"label":"green","r":14},{"label":"blue","r":11}],
-				   "links":[{"source":0,"target":1},{"source":1,"target":2},{"source":2,"target":3},{"source":3,"target":4}]};
-	 */ 
-
-	// dataset to build
-	var dataset = { "nodes": [], "links": [] };
-	// track nodes
-	var node_order = [];
+	var dataset = {"nodes":[],"links":[]},	// dataset to build
+		node_order = [];					// array to track node order
 
 	// make a two-column table
 	var twoColTable = [];
@@ -171,39 +213,41 @@ function prepare_graph_data(table){
 			twoColTable.push(table[row])
 		}
 	}
+	table = twoColTable;
 	// reporting
 	console.log("  input --> original table --> " + JSON.stringify(table) );
-	console.log("  input --> two column table --> " + JSON.stringify(twoColTable) );
+	console.log("  input --> 2 column table --> " + JSON.stringify(twoColTable) );
 
-	table = twoColTable;
 
 	// for each row in table
 	for (var row in table){
 		// for each col in row
 		for (var col in table[row]){
+			row = parseInt(row); // make row an integer
+			col = parseInt(col); // make col an integer
+
 			// clean node name
-			var node = table[row][col].trim().toLowerCase();	
+			var node = table[row][col].trim();	
 			//console.log(row,col,node);
 
 			// if node does not yet exist 
 			if (node_order.indexOf(node) < 0){
-				// track it
+				// add to node_order
 				node_order.push(node);
-				// add it to dataset
+				// add to dataset
 				dataset.nodes.push({ 
 					"label": node, 
 					"r": 1 
 				});
 			} else {
-				// else update dataset
+				// or update node count in dataset
 				var num = node_order.indexOf(node)
 				dataset.nodes[num].r ++;
 			}
-
-			col = parseInt(col); // make it an integer
 			//console.log("node_order: "+ JSON.stringify(node_order));
 
-			// if > 1 col per row && current is not the last col then create link
+			// create a link between current node/col and previous node/col
+			// starting with second column, only those with at least 2 columns
 			if (col > 0 && table[row].length >= 2 ){
 				// push edges 
 				dataset.links.push({ 
@@ -213,11 +257,11 @@ function prepare_graph_data(table){
 			}	
 		}
 	}
-
 	// reporting
 	console.log("  output --> nodes: "+ JSON.stringify(dataset.nodes));
 	console.log("  output --> links: "+ JSON.stringify(dataset.links));
 	
+	// return example_graph;
 	return dataset;
 }
 
@@ -339,7 +383,8 @@ function redraw_graph(data) {
 
 function draw_graph(data) {
 
-	clear_graph();
+
+
 
 	//console.log(data)
     
