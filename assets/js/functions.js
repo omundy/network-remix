@@ -266,7 +266,7 @@ function wordsByOccurrence(text,rmStops) {
         text.split(wordSeparators);             // convert to array
     text.forEach(function(word) {
         if (discard.test(word)) return;         // remove links
-        word = word.replace(punctuation, "");   // remove punctuation
+        //word = word.replace(punctuation, "");   // remove punctuation
         if (rmStops && stopWords.test(word.toLowerCase())) return;  // do|not include stop words
         word = word.substr(0, maxLength);       // remove very long words
         cases[word.toLowerCase()] = word;       // convert to lowercase
@@ -313,11 +313,19 @@ function parseText(text){
         for (var j in indices){
             j = parseInt(j);
 
-            if (prop(textArr[indices[j]-1]))
-                table.push([textArr[indices[j]-1], word]);
-            if (prop(textArr[indices[j]+1]))
-                table.push([word, textArr[indices[j]+1]]);
+            var addtoArr = [];
 
+           // if (prop(textArr[indices[j]-1]))
+           //     addtoArr = [textArr[indices[j]-1], word];
+           // if (prop(textArr[indices[j]+1]))
+            //    addtoArr = [word, textArr[indices[j]+1]];
+
+            // for testing
+            if (prop(textArr[indices[j]-1]) && prop(textArr[indices[j]+1]))
+                addtoArr = [ textArr[indices[j]-1], " *** " + word + " *** ", textArr[indices[j]+1] ] ;
+        
+
+            table.push(addtoArr);
 
         }
 
