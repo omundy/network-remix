@@ -18,3 +18,28 @@ div.tooltip { position: absolute; padding: 5px; font: 12px sans-serif; backgroun
     stroke: #777;
     stroke-width: 2px;
 }
+
+
+
+
+
+#ex1Slider .slider-selection {
+	background: #BABABA;
+}
+
+
+
+/* make viz responsive */
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 95%;
+    padding-bottom: 50%; 
+    vertical-align: top;
+    overflow: hidden;
+}
+.svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    left: 0;
+}

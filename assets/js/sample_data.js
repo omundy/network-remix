@@ -29,9 +29,7 @@ var example_graph = {"nodes":[{"label":"red","r":12},{"label":"orange","r":15},{
 				   	 "links":[{"source":0,"target":1},{"source":1,"target":2},{"source":2,"target":3},{"source":3,"target":4}]};
 
 
-var moby_dick_36 = `
-
-It was not a great while after the affair of the pipe, that one morning shortly after breakfast, Ahab, as was his wont, ascended the cabin-gangway to the deck. There most sea-captains usually walk at that hour, as country gentlemen, after the same meal, take a few turns in the garden.
+var moby_dick_36 = `It was not a great while after the affair of the pipe, that one morning shortly after breakfast, Ahab, as was his wont, ascended the cabin-gangway to the deck. There most sea-captains usually walk at that hour, as country gentlemen, after the same meal, take a few turns in the garden.
 
 Soon his steady, ivory stride was heard, as to and fro he paced his old rounds, upon planks so familiar to his tread, that they were all over dented, like geological stones, with the peculiar mark of his walk. Did you fixedly gaze, too, upon that ribbed and dented brow; there also, you would see still stranger foot-prints- the foot-prints of his one unsleeping, ever-pacing thought.
 
@@ -133,12 +131,8 @@ Silently obeying the order, the three harpooneers now stood with the detached ir
 `;
 
 
-var minima_moralia = `
-
-Theodor Adorno
-
+var minima_moralia = `Theodor Adorno
 Minima Moralia
-
 Dedication
 
 The melancholy science, from which I make this offering to my friend, relates to a realm which has counted, since time immemorial, as the authentic one of philosophy, but which has, since its transformation into method, fallen prey to intellectual disrespect, sententious caprice and in the end forgetfulness: the teaching of the good life. What philosophy once called life, has turned into the sphere of the private and then merely of consumption, which is dragged along as an addendum of the material production-process, without autonomy and without its own substance. Whoever wishes to experience the truth of immediate life, must investigate its alienated form, the objective powers, which determine the individual existence into its innermost recesses. To speak immediately of what is immediate, is to behave no differently from that novelist, who adorns their marionettes with the imitations of the passions of yesteryear like cheap jewelry, and who sets persons in motion, who are nothing other than inventory-pieces of machinery, as if they could still act as subjects, and as if something really depended on their actions. The gaze at life has passed over into ideology, which conceals the fact, that it no longer exists.

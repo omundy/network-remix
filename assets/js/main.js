@@ -65,6 +65,12 @@ var table = [],		// main data table; An array of arrays
 $(document).ready(function() { 
 
 
+$('#ex1').slider({
+	formatter: function(value) {
+		return 'Current value: ' + value;
+	}
+});
+
 	/**
 	 *	Forms, buttons, etc.
 	 */
@@ -83,27 +89,27 @@ $(document).ready(function() {
 	// btn: sample data
 	$("#sample1").on("click", function(){ 
 		$('#input_text').val(arr_to_str(table_colors));
-        eval_input("table");
+        eval_input();
 	});
 	$("#sample1_odd").on("click", function(){ 
 		$('#input_text').val(arr_to_str(table_colors_odd_columns));
-        eval_input("table");
+        eval_input();
 	});
 	$("#sample2").on("click", function(){ 
 		$('#input_text').val(arr_to_str(table_eduardo));
-        eval_input("table");
+        eval_input();
 	});
 	$("#sample3").on("click", function(){ 
 		$('#input_text').val(arr_to_str(table_eduardo,"\t"));
-        eval_input("table");
+        eval_input();
 	});
 	$("#sample4").on("click", function(){ 
-		$('#input_text').val(moby_dick_36);
-        eval_input("plain");
+		$('#input_text').val(charLimit(moby_dick_36,1000));
+        eval_input();
 	});
 	$("#sample5").on("click", function(){
-		$('#input_text').val(minima_moralia);
-        eval_input("plain");
+		$('#input_text').val(charLimit(minima_moralia,500));
+        eval_input();
 	});
 
 	// btn: clear
@@ -114,7 +120,7 @@ $(document).ready(function() {
 	});
 
 	// start
-	$("#sample1").trigger("click");
+	$("#sample4").trigger("click");
 
 });
 
@@ -122,14 +128,16 @@ $(document).ready(function() {
 
 /**
  *	Change the format to match incoming text
+ *	@param {String} formatId - 'table' or 'plain'
  */
-function update_format_btn(newId){
-	// remove / add .active
+function update_format_btn(formatId){
+	// remove .active class from current .active
 	$('#format-options .active ').removeClass('active');
-	$(newId).parent().addClass('active');
-	// get new format
+	// add .active class to new id
+	$(formatId).parent().addClass('active');
+	// save new format
 	formatSelected = $('#format-options .active input').attr('id');
-	console.log("format updated: "+formatSelected, newId);
+	//console.log("formatSelected:", formatSelected, "formatId:", formatId);
 }
 
 
@@ -160,6 +168,12 @@ function strTableOrPlain(str){
 		// track commas and periods
 		text[i].commas = (text[i].text.match(/,/g) || []).length;
 		text[i].periods = (text[i].text.match(/\./g) || []).length;
+
+		// if period found then return as 'plain'
+		if (text[i].periods >= 1) {
+			console.log( 'period found, format: plain' );
+			return 'plain';
+		}
 		
 		// increment possibilities
 		strType.table += text[i].commas;
@@ -173,7 +187,7 @@ function strTableOrPlain(str){
 	} else if (strType.table < strType.plain){
 		var type = 'plain';
 	}
-	console.log( 'table (CSV/TSV) vs. plain text score: ', JSON.stringify(strType), 'winner:', type );
+	console.log( 'table (CSV/TSV) vs. plain text score: ', JSON.stringify(strType), 'winning format:', type );
 	return type;
 }
 
@@ -182,7 +196,7 @@ function strTableOrPlain(str){
 /**
  *	Evaluate the text input 
  */
-function eval_input(format){
+function eval_input(){
 
 	// get current data in textarea
 	var str = $('#input_text').val().trim();
@@ -193,42 +207,20 @@ function eval_input(format){
     	// determine type of input (table vs. plain text)
     	var format = strTableOrPlain(str);
 
-		// update the format to match expected
+		// update the format button
 		update_format_btn("#"+format);
 
+		// format plain text as a table
+		if (format == "plain"){
+			str = parseText(str);
+		}
+		
 
 
 //debugger;
 
 
-
-
-
-
-		
-
-		
-
-
-
-
-
-
-		// is this a formatted CSV/TSV or plain text?
-		if (formatSelected == "plain"){
-			//str = parseText(str);
-			//console.log('formatSelected == "plain"');
-		} else if (formatSelected == "table"){
-			// continue
-			//console.log('formatSelected == "table"');
-		}
-		
-
-
-
-
-
-
+/**/
 	
 		// and parse it using papaparse: http://papaparse.com/docs
 		var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
@@ -247,18 +239,15 @@ function eval_input(format){
 			if (str !== "") display_msg('<div class="bg-danger">csv must contain at least one comma</div>');
 			update_table(p.data); // try anyway
 		}
+
+
+
 	}
 	if (str == ""){
 		svg.selectAll("*").remove();
 	}
 	lastinput = str.trim(); // update lastinput
 
-}
-
-
-function text_to_table(){
-
-	//////.toLowerCase()
 }
 
 
@@ -286,7 +275,7 @@ function update_graph(table){
 	// instead look to see if it exists and redraw
 
 	//redraw_graph(dataset);
-	//draw_graph(dataset) ;
+	draw_graph(dataset) ;
 }	 
 
 
@@ -458,22 +447,27 @@ var simulation = d3.forceSimulation()
  *	Based on https://bl.ocks.org/shimizu/e6209de87cdddde38dadbb746feaf3a3	
  */
    
-// chart options
-var width = 500, height = 500,
-	margin = { top:0, left:0, bottom:0, right:0 }
 
-var chartWidth = width - (margin.left+margin.right)
-var chartHeight = height - (margin.top+margin.bottom)
+
+
+// chart options
+var margin = { top: 20, right: 10, bottom: 40, left: 10 },
+	width = 600 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
 
 // add svg to page
 var svg = d3.select("#graph").append("svg")
-	.attr("width", width)
-	.attr("height", height);
+	// responsive SVG needs these 2 attributes and no width and height attr
+	.attr("preserveAspectRatio", "xMinYMin meet")
+	.attr("viewBox", "0 0 "+ width +" "+ height)
+	.classed("svg-content-responsive", true); // class to make it responsive
+
+
 
 var chartLayer = svg.append("g")
 	.classed("chartLayer", true)
-	.attr("width", chartWidth)
-    .attr("height", chartHeight)
+	.attr("width", width)
+    .attr("height", height)
     .attr("transform", "translate("+[margin.left, margin.top]+")");
 
 
@@ -502,13 +496,16 @@ function draw_graph(data) {
 
 	// many-body force applies mutually to all nodes
     var manyBody = d3.forceManyBody()
-    	.strength(-500); // strength accessor to the specified number or function. + nodes attract / - nodes repel. Default -30
+    	// strength accessor to the specified number or function. + nodes attract / - nodes repel. Default -30
+    	//.strength(-150)
+    	.strength(- table.length)
+    ; 
 
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.index }))
         .force("collide",d3.forceCollide( function(d){ return d.r + 16 }).iterations(16) )
         .force("charge", manyBody)
-        .force("center", d3.forceCenter(chartWidth / 2, chartWidth / 2))
+        .force("center", d3.forceCenter(width / 2, height / 2))
     //    .force("y", d3.forceY(0))
     //    .force("x", d3.forceX(0))
 	.force("x", d3.forceX(width/2))
@@ -522,6 +519,7 @@ function draw_graph(data) {
         .enter()
         .append("line")
         .attr("stroke", "black")
+
 
 	// create a linear scale for radius
 	var rScale = d3.scaleLinear()

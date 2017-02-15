@@ -4,6 +4,24 @@
  *  Owen Mundy owenmundy.com
  */
  
+
+
+
+
+
+
+/**
+ *  Limit a string by number of characters
+ *  @param {String} str - input string
+ *  @param {Integer} limit - character limit
+ *  @return {String} str - original string, limited
+ */
+function charLimit(str, limit=100){
+    var cut= str.indexOf(' ', limit);
+    if(cut== -1) return str;
+    return str.substring(0, cut)
+}
+
  
 
 
@@ -127,7 +145,8 @@ function countWords(str) {
 function cleanString(str) {
     return str.replace(/[^\w\s]|_/g, ' ')
         .replace(/\s+/g, ' ')
-        .toLowerCase();
+        .toLowerCase()
+        .trim();
 }
 
 function extractSubstr(str, regexp) {
@@ -281,55 +300,149 @@ function wordsByOccurrence(text,rmStops) {
 /**
  *  Find all words in a text or array, score by occurance
  */
-function parseText(text){
+function parseText(text,wordLimit=-1,connectionLimit=3){
 
-    var limit = 50;
-
-    // split text into array
+    // split ("tokenize") text into array
     var textArr = text.trim().split(wordSeparators);
 
+    // limit number of words
+    var textArr = textArr.slice(0,wordLimit);
+
     // sort words by occurrence, do not remove stop words
-    var words = wordsByOccurrence(textArr,false);
+    var topWords = wordsByOccurrence(textArr,false);
 
-    console.log("words.length = "+ words.length);
+    console.log("topWords.length = "+ topWords.length, JSON.stringify(topWords));
 
-    for (var i=0; i<limit; i++)
-        console.log(i +". "+ JSON.stringify(words[i]));
+
+    // find the positions of each of these topWords
+    for (var i=0; i<topWords.length; i++){
+        //console.log(i +". "+ JSON.stringify(topWords[i]));
+
+        // if key doesn't exist skip
+        if (!prop(topWords[i].key)) return;
+
+        // store word
+        var word = topWords[i].key;
+
+        // store occurances of this word in topWords[i]
+        topWords[i].indices = getAllIndexes(textArr,word);
+    }
+    //console.log(topWords);
 
     var table = [];
+    var table_tracker = [];
+    var table_str = '';
 
-    // for each of these words
-    for (var i=0; i<limit; i++){
+    // loop through top words again to find previous and next words
+    for (var i=0; i<topWords.length; i++){
+        //console.log(topWords[i]);
 
-        if (!prop(words[i].key)) return;
-        var word = words[i].key;
+        if ( topWords[i].indices.length < connectionLimit ) continue;
 
-        // look at all occurances of this word in the text array
-        var indices = getAllIndexes(textArr,word);
+        // loop through indices of that word
+        for (var j in topWords[i].indices){
 
-        console.log("\n",word,JSON.stringify(indices));
+            // if index exists AND there are no periods
+            if ( topWords[i].key && topWords[i].key.indexOf('.') === -1){
 
-        // for each of the indices
-        for (var j in indices){
-            j = parseInt(j);
+                // store info
+                var word = topWords[i].key;
+                var pos = topWords[i].indices[j];
+                //console.log( textArr[pos] );
 
-            var addtoArr = [];
+                // if previous exists AND there are no periods
+                if ( prop(textArr[pos-1]) && textArr[pos-1].indexOf('.') === -1 ){
 
-           // if (prop(textArr[indices[j]-1]))
-           //     addtoArr = [textArr[indices[j]-1], word];
-           // if (prop(textArr[indices[j]+1]))
-            //    addtoArr = [word, textArr[indices[j]+1]];
+                    // create a "tracking string" with both words and their positions
+                    var track = textArr[pos-1] +"-"+ String(pos-1) +"_"+ word +"-" + pos;
+                    //console.log(track);
 
-            // for testing
-            if (prop(textArr[indices[j]-1]) && prop(textArr[indices[j]+1]))
-                addtoArr = [ textArr[indices[j]-1], " *** " + word + " *** ", textArr[indices[j]+1] ] ;
+                    // if tracking string doesn't exist in tracking array
+                    if ( table_tracker.indexOf(track) === -1 ){
+                        // add it
+                        table_tracker.push( track );
+                        // and push to main table
+                        var arr = [ cleanString(textArr[pos-1]), cleanString(word) ];
+                        table.push(arr);
+                        table_str += "\n"+arr.toString();
+                    }
+                }
+                // if next exists AND there are no periods
+                if ( prop(textArr[pos+1]) && textArr[pos+1].indexOf('.') === -1 ){
+
+                    // create a "tracking string" with both words and their positions
+                    var track = word +"-" + pos +"_"+ textArr[pos+1] +"-"+ String(pos+1);
+                    //console.log(track);
+
+                    // if tracking string doesn't exist in tracking array
+                    if ( table_tracker.indexOf(track) === -1 ){
+                        // add it
+                        table_tracker.push( track );
+                        // and push to main table
+                        var arr = [ cleanString(word), cleanString(textArr[pos+1]) ];
+                        table.push(arr);
+                        table_str += "\n"+arr.toString();
+                    }
+                }
+            }
+        }
+    }
+
+    console.log("table.length = "+ table.length, JSON.stringify(table));
+
+    return table_str.trim();
+
+
+/*
+
         
+var table_str = "";
 
-            table.push(addtoArr);
+    // for each of the indices of top words
+    // store them in a table
+    for (var j in indices){
+        j = parseInt(j);
 
+        // if index exists AND there are no periods
+        if ( prop(textArr[indices[j]]) && textArr[indices[j]].indexOf('.') === -1){
+        
+            console.log(arr,table[table.length-1]);
+            if (arr === table[table.length-1]) console.log("**MORNING**")
+
+            // if previous exists AND there are no periods
+            if (prop(textArr[indices[j]-1]) && textArr[indices[j]-1].indexOf('.') === -1 
+                // make sure it isn't the same as the one just entered
+                ){
+                var arr = [ cleanString(textArr[indices[j]-1]), cleanString(word) ];
+
+
+
+                
+                //console.log(arr);
+                // add previous word + word relationship to table
+                table.push(arr);
+                table_str += "\n"+i+"-"+j+". "+ arr.toString();
+            }
+            // if next exists AND there are no periods  
+            if (prop(textArr[indices[j]+1]) && textArr[indices[j]+1].indexOf('.') === -1 ){
+                var arr = [ cleanString(word), cleanString(textArr[indices[j]+1]) ];
+                //console.log(arr);
+                // add word + next word relationship to table
+                table.push(arr);
+                table_str += "\n"+i+"-"+j+". "+ arr.toString();
+            }
         }
 
+
     }
+
+*/
+
+
+    
+
+    
+    
 
 
 
@@ -348,14 +461,30 @@ function parseText(text){
     });
 */
 
-    for (var i=0; i<table.length; i++)
-        console.log(i +". "+ table[i]);
+//    for (var i=0; i<table.length; i++)
+//        console.log(i +". "+ table[i]);
 
 
 
     // build graph
 
 }
+
+
+/**
+ * Randomize array element order in-place.
+ * Using Durstenfeld shuffle algorithm.
+ */
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
+
 
 
 function getAllIndexes(arr, val) {
