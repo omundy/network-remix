@@ -65,11 +65,7 @@ var table = [],		// main data table; An array of arrays
 $(document).ready(function() { 
 
 
-$('#ex1').slider({
-	formatter: function(value) {
-		return 'Current value: ' + value;
-	}
-});
+
 
 	/**
 	 *	Forms, buttons, etc.
