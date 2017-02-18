@@ -104,21 +104,6 @@ function display_table(arr,id,limit){
 
 
 /**
- *  Limit a string by number of characters
- *  @param {String} str - input string
- *  @param {Integer} limit - character limit
- *  @return {String} str - original string, limited
- */
-function charLimit(str, limit=100){
-    var cut= str.indexOf(' ', limit);
-    if(cut== -1) return str;
-    return str.substring(0, cut)
-}
-
- 
-
-
-/**
  *	Counting functions
  */
 
@@ -297,16 +282,40 @@ function wordsByOccurrence(text,rmStops,rmPunct) {
     return tags;
 }
 
+
+
+
+/**
+ *  Limit a string by number of characters
+ *  @param {String} str - input string
+ *  @param {Integer} limit - character limit
+ *  @return {String} str - original string, limited
+ */
+function charLimit(str, limit){
+    var cut = str.indexOf(' ', limit);
+    if (cut == -1) return str;
+    return str.substring(0, cut);
+}
+
+
+
 /**
  *  Find all words in a text or array, score by occurance
  */
 function parseText(text,wordLimit=-1,connectionLimit=3){
 
+    // limit number of words
+    //var textArr = textArr.slice(0,wordLimit); // this is probably slower
+    text = charLimit(text, prefs.maxWords);
+
     // split ("tokenize") text into array
     var textArr = text.trim().split(wordSeparators);
 
-    // limit number of words
-    var textArr = textArr.slice(0,wordLimit);
+    // save number for use elsewhere
+    update_details(textArr.length);
+
+
+  
 
     // sort words by occurrence, do not remove stop words
     var topWords = wordsByOccurrence(textArr,false,false);

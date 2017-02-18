@@ -36,28 +36,10 @@ ORDER OF PROGRAM
 "use strict";
 
 
-
-/**
- *	
- */
-var g = new function() {
-
-    var internalFunction = function() {
-
-    };
-
-    this.publicFunction = function() {
-
-    };
-
-
-};
-
-
 var table = [],		// main data table; An array of arrays
 	lastinput = "",	// last input from user, check for updates
-	formatSelected = "table", // format of incoming data
-	prefs = { "minWords":1, "maxWords": 500, "maxEdges": 200 };
+	details = { "currentTotalWords":0, "format": "table" },
+	prefs = { "minWords":1, "maxWords": 100, "maxEdges": 200 };
 
 
 
@@ -78,33 +60,35 @@ $(document).ready(function() {
 	    fillClass: 'rangeslider__fill',
 	    handleClass: 'rangeslider__handle',
 	    onInit: function() {
-	        valueOutput(this.$element[0]);
+	        saveValue(this.$element[0]);
 	    },
 	    onSlide: function(position, value) {
 	        //console.log('onSlide','position: ' + position, 'value: ' + value);
-	        valueOutput(this.$element[0]);
+	        saveValue(this.$element[0]);
 	    },
 	    onSlideEnd: function(position, value) {
 	        //console.log('onSlide','position: ' + position, 'value: ' + value);
-	        valueOutput(this.$element[0]);
-		
+	        saveValue(this.$element[0]);
 			eval_input();
 	    }
 	});
 
-	function valueOutput(element) {
+	function saveValue(element) {
 
 		// display output
 		var textContent = ('textContent' in document) ? 'textContent' : 'innerText';
 		var output = element.parentNode.getElementsByTagName('output')[0] || element.parentNode.parentNode.getElementsByTagName('output')[0];
-		output[textContent] = element.value;
+		var type;
 
 		// update preferences
 		if (element.id == "word-limit"){
 			prefs.maxWords = element.value;
+			type = "words";
 		} else if (element.id == "edge-limit"){
 			prefs.maxEdges = element.value;
+			type = "edges";
 		}
+		output[textContent] = element.value + " " + type;
 	}
 
 
@@ -116,12 +100,14 @@ $(document).ready(function() {
     $('#input_text').on('keyup change', function() {
         eval_input();
     });
+    /*
 	// listen for format change
 	$(document).on('change', '#format-options input', function (e) {
-	    formatSelected = $('#format-options .active input').attr('id');
+	    details.format = $('#format-options .active input').attr('id');
 	    eval_input();
 	    //console.log("format updated: "+formatSelected);
 	});
+	*/
 
 	// btn: sample data
 	$("#sample1").on("click", function(){ 	
@@ -160,9 +146,10 @@ function update_input_text(txt){
     eval_input();
 }
 
-function update_sliders(max){
+function update_details(currentTotalWords){
 	// update word-limit-slider max
-	$('.range-slider-word-limit input').attr('max',max);
+	$('.range-slider-word-limit input').attr('max',currentTotalWords);
+	details.currentTotalWords = currentTotalWords;
 }
 
 
@@ -176,7 +163,7 @@ function update_format_btn(formatId){
 	// add .active class to new id
 	$(formatId).parent().addClass('active');
 	// save new format
-	formatSelected = $('#format-options .active input').attr('id');
+	details.format = $('#format-options .active input').attr('id');
 	//console.log("formatSelected:", formatSelected, "formatId:", formatId);
 }
 
@@ -238,21 +225,27 @@ function strTableOrPlain(str){
  */
 function eval_input(){
 
+	// report prefs/details
+	console.log(JSON.stringify(prefs),JSON.stringify(details));
+
 	// get current data in textarea and limit
 	var str = $('#input_text').val().trim();
+
+	// if input is empty exit early
+	if (str === "") return;
 
 	// if input is different then continue
     if (str !== lastinput){
 
     	// determine type of input (table vs. plain text)
-    	var format = strTableOrPlain(str);
+    	details.format = strTableOrPlain(str);
 
 		// update the format button
-		update_format_btn("#"+format);
+		update_format_btn("#"+details.format);
 
 		// format plain text as a table
-		if (format == "plain"){
-			str = charLimit(parseText(str),prefs.maxWords);
+		if (details.format == "plain"){
+			str = parseText(str);
 		}
 		
 
