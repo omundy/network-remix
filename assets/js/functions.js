@@ -11,21 +11,6 @@
 
 
 /**
- *  Limit a string by number of characters
- *  @param {String} str - input string
- *  @param {Integer} limit - character limit
- *  @return {String} str - original string, limited
- */
-function charLimit(str, limit=100){
-    var cut= str.indexOf(' ', limit);
-    if(cut== -1) return str;
-    return str.substring(0, cut)
-}
-
- 
-
-
-/**
  *	Load a remote CSV file
  */
 function load_csv(file,callback){
@@ -116,6 +101,21 @@ function display_table(arr,id,limit){
 
 
 
+
+
+/**
+ *  Limit a string by number of characters
+ *  @param {String} str - input string
+ *  @param {Integer} limit - character limit
+ *  @return {String} str - original string, limited
+ */
+function charLimit(str, limit=100){
+    var cut= str.indexOf(' ', limit);
+    if(cut== -1) return str;
+    return str.substring(0, cut)
+}
+
+ 
 
 
 /**
@@ -278,14 +278,14 @@ var stopWords = /^(i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourse
 /**
  *  Find all words in a text or array, score by occurance
  */
-function wordsByOccurrence(text,rmStops) {
+function wordsByOccurrence(text,rmStops,rmPunct) {
     var tags = {},
         cases = {};
     if ( !Array.isArray(text) )                 // if string
         text.split(wordSeparators);             // convert to array
     text.forEach(function(word) {
         if (discard.test(word)) return;         // remove links
-        //word = word.replace(punctuation, "");   // remove punctuation
+        if (rmPunct) word = word.replace(punctuation, "");   // remove punctuation
         if (rmStops && stopWords.test(word.toLowerCase())) return;  // do|not include stop words
         word = word.substr(0, maxLength);       // remove very long words
         cases[word.toLowerCase()] = word;       // convert to lowercase
@@ -309,9 +309,10 @@ function parseText(text,wordLimit=-1,connectionLimit=3){
     var textArr = textArr.slice(0,wordLimit);
 
     // sort words by occurrence, do not remove stop words
-    var topWords = wordsByOccurrence(textArr,false);
+    var topWords = wordsByOccurrence(textArr,false,false);
 
-    console.log("topWords.length = "+ topWords.length, JSON.stringify(topWords));
+    console.log("topWords.length = "+ topWords.length, " *** num top words found over wordLimit = ", wordLimit);
+    //console.log( JSON.stringify(topWords) );
 
 
     // find the positions of each of these topWords
@@ -388,86 +389,10 @@ function parseText(text,wordLimit=-1,connectionLimit=3){
         }
     }
 
-    console.log("table.length = "+ table.length, JSON.stringify(table));
+    console.log("table.length = "+ table.length);
+    //console.log(JSON.stringify(table));
 
     return table_str.trim();
-
-
-/*
-
-        
-var table_str = "";
-
-    // for each of the indices of top words
-    // store them in a table
-    for (var j in indices){
-        j = parseInt(j);
-
-        // if index exists AND there are no periods
-        if ( prop(textArr[indices[j]]) && textArr[indices[j]].indexOf('.') === -1){
-        
-            console.log(arr,table[table.length-1]);
-            if (arr === table[table.length-1]) console.log("**MORNING**")
-
-            // if previous exists AND there are no periods
-            if (prop(textArr[indices[j]-1]) && textArr[indices[j]-1].indexOf('.') === -1 
-                // make sure it isn't the same as the one just entered
-                ){
-                var arr = [ cleanString(textArr[indices[j]-1]), cleanString(word) ];
-
-
-
-                
-                //console.log(arr);
-                // add previous word + word relationship to table
-                table.push(arr);
-                table_str += "\n"+i+"-"+j+". "+ arr.toString();
-            }
-            // if next exists AND there are no periods  
-            if (prop(textArr[indices[j]+1]) && textArr[indices[j]+1].indexOf('.') === -1 ){
-                var arr = [ cleanString(word), cleanString(textArr[indices[j]+1]) ];
-                //console.log(arr);
-                // add word + next word relationship to table
-                table.push(arr);
-                table_str += "\n"+i+"-"+j+". "+ arr.toString();
-            }
-        }
-
-
-    }
-
-*/
-
-
-    
-
-    
-    
-
-
-
-/*
-    // for each of these words
-    for (var i=100; i<110; i++){
-        // choose the previous / next word in the phrase
-        //var indices = getIndicesOf(words[i].key,text);
-        table.push(words[i])
-    }
-    console.log(table);
-
-
-    bigrams(table).forEach(function(pair){
-        console.log(JSON.stringify(pair));
-    });
-*/
-
-//    for (var i=0; i<table.length; i++)
-//        console.log(i +". "+ table[i]);
-
-
-
-    // build graph
-
 }
 
 

@@ -54,17 +54,58 @@ var g = new function() {
 };
 
 
-
-
-
 var table = [],		// main data table; An array of arrays
 	lastinput = "",	// last input from user, check for updates
-	formatSelected = "table"; // format of incoming data
+	formatSelected = "table", // format of incoming data
+	prefs = { "minWords":1, "maxWords": 500, "maxEdges": 200 };
+
+
+
 
 
 $(document).ready(function() { 
 
 
+
+	// rangeslider 
+	var $element = $('[data-rangeslider]');
+	$element.rangeslider({
+	    polyfill: false,	// Deactivate the feature detection
+	    rangeClass: 'rangeslider',	 // Default CSS classes
+	    disabledClass: 'rangeslider--disabled',
+	    horizontalClass: 'rangeslider--horizontal',
+	    verticalClass: 'rangeslider--vertical',
+	    fillClass: 'rangeslider__fill',
+	    handleClass: 'rangeslider__handle',
+	    onInit: function() {
+	        valueOutput(this.$element[0]);
+	    },
+	    onSlide: function(position, value) {
+	        //console.log('onSlide','position: ' + position, 'value: ' + value);
+	        valueOutput(this.$element[0]);
+	    },
+	    onSlideEnd: function(position, value) {
+	        //console.log('onSlide','position: ' + position, 'value: ' + value);
+	        valueOutput(this.$element[0]);
+		
+			eval_input();
+	    }
+	});
+
+	function valueOutput(element) {
+
+		// display output
+		var textContent = ('textContent' in document) ? 'textContent' : 'innerText';
+		var output = element.parentNode.getElementsByTagName('output')[0] || element.parentNode.parentNode.getElementsByTagName('output')[0];
+		output[textContent] = element.value;
+
+		// update preferences
+		if (element.id == "word-limit"){
+			prefs.maxWords = element.value;
+		} else if (element.id == "edge-limit"){
+			prefs.maxEdges = element.value;
+		}
+	}
 
 
 	/**
@@ -83,31 +124,24 @@ $(document).ready(function() {
 	});
 
 	// btn: sample data
-	$("#sample1").on("click", function(){ 
-		$('#input_text').val(arr_to_str(table_colors));
-        eval_input();
+	$("#sample1").on("click", function(){ 	
+		update_input_text(arr_to_str(table_colors));
 	});
 	$("#sample1_odd").on("click", function(){ 
-		$('#input_text').val(arr_to_str(table_colors_odd_columns));
-        eval_input();
+		update_input_text(arr_to_str(table_colors_odd_columns));
 	});
 	$("#sample2").on("click", function(){ 
-		$('#input_text').val(arr_to_str(table_eduardo));
-        eval_input();
+		update_input_text(arr_to_str(table_eduardo));
 	});
 	$("#sample3").on("click", function(){ 
-		$('#input_text').val(arr_to_str(table_eduardo,"\t"));
-        eval_input();
+		update_input_text(arr_to_str(table_eduardo,"\t"));
 	});
 	$("#sample4").on("click", function(){ 
-		$('#input_text').val(charLimit(moby_dick_36,1000));
-        eval_input();
+		update_input_text(moby_dick_36);
 	});
 	$("#sample5").on("click", function(){
-		$('#input_text').val(charLimit(minima_moralia,500));
-        eval_input();
+		update_input_text(minima_moralia);
 	});
-
 	// btn: clear
 	$("#clear").on("click", function(){ 
 		$('#input_text').val(""); 
@@ -120,6 +154,16 @@ $(document).ready(function() {
 
 });
 
+
+function update_input_text(txt){
+	$('#input_text').val(txt);
+    eval_input();
+}
+
+function update_sliders(max){
+	// update word-limit-slider max
+	$('.range-slider-word-limit input').attr('max',max);
+}
 
 
 /**
@@ -194,7 +238,7 @@ function strTableOrPlain(str){
  */
 function eval_input(){
 
-	// get current data in textarea
+	// get current data in textarea and limit
 	var str = $('#input_text').val().trim();
 
 	// if input is different then continue
@@ -208,7 +252,7 @@ function eval_input(){
 
 		// format plain text as a table
 		if (format == "plain"){
-			str = parseText(str);
+			str = charLimit(parseText(str),prefs.maxWords);
 		}
 		
 
@@ -379,260 +423,6 @@ function prepare_graph_data(table){
 
 
 
-
-
-
-
-/**
- *
-
-function graph(data){
-
-	var width = 500, height = 500;
-
-	// add svg to page
-	var svg = d3.select("#graph").append("svg")
-		.attr("width", width)
-		.attr("height", height);
-
-
-	var nodes = svg.selectAll("circle.node")
-		.data(data.nodes)
-		.enter()
-		.append("circle")
-		.attr("class", "node")
-		.attr("r", 12);
-
-
-var simulation = d3.forceSimulation()
-  .force("link", d3.forceLink().id(function(d) { return d.id; }))
-  .force("charge", d3.forceManyBody())
-  .force("center", d3.forceCenter(width / 2, height / 2));
-
-
-
-
-	var edges = svg.selectAll("line.link") 
-		.data(data.edges)
-		.enter()
-		.append("line")
-		.style("stroke","black");
-
-
-/*
-
-	force.on("tick", function() {
-		edges.attr("x1", function(d) { return d.source.x; })
-			.attr("y1", function(d) { return d.source.y; }) 
-			.attr("x2", function(d) { return d.target.x; }) 
-			.attr("y2", function(d) { return d.target.y; });
-		nodes.attr("cx", function(d) { return d.x; }) 
-			.attr("cy", function(d) { return d.y; });
-	});		
-
-}
-
-*/
-
-
-
-
-
-/**
- *	Draw the network graph
- *	Based on https://bl.ocks.org/shimizu/e6209de87cdddde38dadbb746feaf3a3	
- */
-   
-
-
-
-// chart options
-var margin = { top: 20, right: 10, bottom: 40, left: 10 },
-	width = 600 - margin.left - margin.right,
-    height = 600 - margin.top - margin.bottom;
-
-// add svg to page
-var svg = d3.select("#graph").append("svg")
-	// responsive SVG needs these 2 attributes and no width and height attr
-	.attr("preserveAspectRatio", "xMinYMin meet")
-	.attr("viewBox", "0 0 "+ width +" "+ height)
-	.classed("svg-content-responsive", true); // class to make it responsive
-
-
-
-var chartLayer = svg.append("g")
-	.classed("chartLayer", true)
-	.attr("width", width)
-    .attr("height", height)
-    .attr("transform", "translate("+[margin.left, margin.top]+")");
-
-
-// create div for the tooltip
-var tooltip = d3.select("body").append("div")	
-    .attr("class", "tooltip")				
-    .style("opacity", 0);
-
-
-
-
-function clear_graph(){
-	svg.selectAll("*").remove();
-}
-
-
-
-
-function draw_graph(data) {
-
-
-	//console.log(data)
-    
-    // d3v4-force documentation: 
-    // https://github.com/d3/d3-force/blob/master/README.md
-
-	// many-body force applies mutually to all nodes
-    var manyBody = d3.forceManyBody()
-    	// strength accessor to the specified number or function. + nodes attract / - nodes repel. Default -30
-    	//.strength(-150)
-    	.strength(- table.length)
-    ; 
-
-    var simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(function(d) { return d.index }))
-        .force("collide",d3.forceCollide( function(d){ return d.r + 16 }).iterations(16) )
-        .force("charge", manyBody)
-        .force("center", d3.forceCenter(width / 2, height / 2))
-    //    .force("y", d3.forceY(0))
-    //    .force("x", d3.forceX(0))
-	.force("x", d3.forceX(width/2))
-	.force("y", d3.forceY(height/2))
-
-
-    var link = svg.append("g")
-        .attr("class", "links")
-        .selectAll("line")
-        .data(data.links)
-        .enter()
-        .append("line")
-        .attr("stroke", "black")
-
-
-	// create a linear scale for radius
-	var rScale = d3.scaleLinear()
-		.domain([0, d3.max(data.nodes, function(d) { return d.r; })])
-		.range([1, 15]);
-
-
-	var rColor = Math.floor(Math.random()*255);
-	var nodeFill = "rgba("+ rColor +","+ rColor +",255, .75)";
-	var nodeStroke = "rgba(255, 0," + rColor +", 0.25)";
-	var textFill = "rgba(0,0,0,1)";
-
-    
-    var node = svg.append("g")
-        .attr("class", "nodes")
-        .selectAll("circle")
-        .data(data.nodes)
-        .enter().append("circle")
-        	.attr("r", function(d){ return rScale(d.r) })
-			.attr("fill",nodeFill)
-			.attr("stroke",nodeStroke)
-			.attr("stroke-width", 5)
-        .call(d3.drag()
-            .on("start", dragstarted)
-            .on("drag", dragged)
-            .on("end", dragended));    
-    
-
-
-    svg.selectAll("circle")	
-		.on("mouseover", function(d) {
-			//console.log(d3.select(this).attr("id")); // log circle id
-			// show tooltip
-			tooltip.transition()
-				.duration(200)
-				.style("opacity", .9);
-			tooltip.html( "label: "+ d.label +"<br>r: "+ d.r +"<br>index: "+ d.index )
-				.style("left", (d3.event.pageX) + "px")
-				.style("top", (d3.event.pageY - 50) + "px");
-		})
-		.on("mouseout", function(d) {
-			// hide tooltip
-			tooltip.transition()
-				.duration(500)
-				.style("opacity", 0);
-		});
-    
-	var texts = svg.selectAll("text")
-    	.data(data.nodes)
-    	.enter()
-    	.append("text")
-    	.text(function(d){ return d.label; })
-			.attr("font-family", "sans-serif")
-			.attr("font-size", "11px")
-			.attr("fill", textFill);
-
-    	
-
-    var ticked = function() {
-        link
-            .attr("x1", function(d) { return d.source.x; })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
-
-        node
-            .attr("cx", function(d) { return d.x; })
-            .attr("cy", function(d) { return d.y; });
-
-        texts
-        	.attr("x", function(d){ return d.x +5; })
-	    	.attr("y", function(d){ return d.y -5; })	
-        	    
-    }  
-    
-    simulation
-        .nodes(data.nodes)
-        .on("tick", ticked);
-
-    simulation.force("link")
-        .links(data.links);    
-    
-
-    
-    
-    
-    function dragstarted(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-    }
-    
-    function dragged(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
-    }
-    
-    function dragended(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-    } 
-            
-}
-
-
-// USE THIS TO MAKE A REDRAW FUNCTION
-// from : http://www.coppelia.io/2014/07/an-a-to-z-of-extra-features-for-the-d3-force-layout/
-//Restart the visualisation after any node and link changes
-function redraw_graph(data) {
-	link = link.data(data.links);
-	link.exit().remove();
-	link.enter().insert("line", ".node").attr("class", "link");
-	node = node.data(data.nodes);
-	node.enter().insert("circle", ".cursor").attr("class", "node").attr("r", 5).call(force.drag);
-	force.start();
-}
 
 
 

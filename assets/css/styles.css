@@ -22,10 +22,18 @@ div.tooltip { position: absolute; padding: 5px; font: 12px sans-serif; backgroun
 
 
 
+/* range-slider */
+.range-slider { width: 200px; height: 10px; float: right; }
+.range-slider output { float: left; width: 30px }
+.rangeslider__fill { background: rgba(0,255,0,1); }
+.rangeslider--horizontal { height: 5px; width: 100%; }
+.rangeslider--horizontal .rangeslider__handle { top: -5px; }
+.rangeslider__handle { width: 15px; height: 15px; }
+.rangeslider__handle:after { width: 8px; height: 8px; }
 
-#ex1Slider .slider-selection {
-	background: #BABABA;
-}
+
+
+
 
 
 
