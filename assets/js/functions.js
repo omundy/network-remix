@@ -408,6 +408,8 @@ function parseText(text,wordLimit=-1,connectionLimit=3){
         }
     }
     details.currentTableLength = table.length
+    $('#currentTableLength').html(details.currentTableLength);
+
     console.log("table = ", JSON.stringify(table));
 
     return table_str.trim();
