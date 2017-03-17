@@ -38,7 +38,7 @@ ORDER OF PROGRAM
 
 var table = [],		// main data table; An array of arrays
 	lastinput = "",	// last input from user, check for updates
-	details = { "currentTotalWords":0, "format": "table" },
+	details = { "currentTotalWords":0, "currentTotalChars":0, "currentTotalUniqueWords":0, "currentTableLength":0, "format": "table" },
 	prefs = { "minWords":1, "maxWords": 100, "maxEdges": 200 };
 
 
@@ -136,7 +136,8 @@ $(document).ready(function() {
 	});
 
 	// start
-	$("#sample4").trigger("click");
+	$("#sample5").trigger("click");
+
 
 });
 
@@ -147,9 +148,17 @@ function update_input_text(txt){
 }
 
 function update_details(currentTotalWords){
-	// update word-limit-slider max
-	$('.range-slider-word-limit input').attr('max',currentTotalWords);
+
+
 	details.currentTotalWords = currentTotalWords;
+
+
+
+
+	// update word-limit-slider max
+	$('.range-slider-word-limit input').attr('max',details.currentTotalWords);
+	// update rangeslider
+	$('input[type="range"]').rangeslider('update', true);
 }
 
 
@@ -157,11 +166,11 @@ function update_details(currentTotalWords){
  *	Change the format to match incoming text
  *	@param {String} formatId - 'table' or 'plain'
  */
-function update_format_btn(formatId){
+function update_format_btn(format){
 	// remove .active class from current .active
 	$('#format-options .active ').removeClass('active');
 	// add .active class to new id
-	$(formatId).parent().addClass('active');
+	$("#"+format).parent().addClass('active');
 	// save new format
 	details.format = $('#format-options .active input').attr('id');
 	//console.log("formatSelected:", formatSelected, "formatId:", formatId);
@@ -196,9 +205,10 @@ function strTableOrPlain(str){
 		text[i].commas = (text[i].text.match(/,/g) || []).length;
 		text[i].periods = (text[i].text.match(/\./g) || []).length;
 
+		// early exit option
 		// if period found then return as 'plain'
 		if (text[i].periods >= 1) {
-			console.log( 'period found, format: plain' );
+			console.log( ' --- format notes --- period found, format: plain' );
 			return 'plain';
 		}
 		
@@ -214,7 +224,7 @@ function strTableOrPlain(str){
 	} else if (strType.table < strType.plain){
 		var type = 'plain';
 	}
-	console.log( 'table (CSV/TSV) vs. plain text score: ', JSON.stringify(strType), 'winning format:', type );
+	console.log( ' --- format notes --- table (CSV/TSV) vs. plain text score: ', JSON.stringify(strType), 'winning format:', type );
 	return type;
 }
 
@@ -225,8 +235,11 @@ function strTableOrPlain(str){
  */
 function eval_input(){
 
+	console.log("\nNEW INPUT DETECTED")
+
 	// report prefs/details
-	console.log(JSON.stringify(prefs),JSON.stringify(details));
+	console.dirxml(" --- preferences --- ", prefs);
+	console.dirxml(" --- details --- ", details);
 
 	// get current data in textarea and limit
 	var str = $('#input_text').val().trim();
@@ -241,11 +254,14 @@ function eval_input(){
     	details.format = strTableOrPlain(str);
 
 		// update the format button
-		update_format_btn("#"+details.format);
+		//update_format_btn(details.format);
+
+		// update format
+	    $('#format-detected').html(details.format);
 
 		// format plain text as a table
 		if (details.format == "plain"){
-			str = parseText(str);
+			str = parseText(str,prefs.maxWords,prefs.maxEdges);
 		}
 		
 
@@ -364,6 +380,7 @@ function prepare_graph_data(table){
 		node_order = [];					// array to track node order
 
 	table = convertTwoColTable(table);		// make sure this is a two-column table
+	//console.log("table",table)
 
 	// for each row in table
 	for (var row in table){
@@ -371,6 +388,12 @@ function prepare_graph_data(table){
 		for (var col in table[row]){
 			row = parseInt(row); 			// make row an integer
 			col = parseInt(col); 			// make col an integer
+
+			// if not a string (for some reason?)
+			if (typeof table[row][col] !== "string"){
+				console.log("NOT A STRING", row, col, table[row][col]);
+				break;
+			}
 
 			// clean node name
 			var node = table[row][col].trim();	

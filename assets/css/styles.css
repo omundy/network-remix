@@ -20,6 +20,9 @@ div.tooltip { position: absolute; padding: 5px; font: 12px sans-serif; backgroun
 }
 
 
+.round { border-radius: 4px; background: rgba(255,0,17,.25); padding: 3px 4px; margin: 5px 0 0 5px }
+
+
 
 
 /* range-slider */
@@ -38,7 +41,7 @@ div.tooltip { position: absolute; padding: 5px; font: 12px sans-serif; backgroun
 
 
 
-/* make viz responsive */
+/* make viz responsive 
 .svg-container {
     display: inline-block;
     position: relative;
@@ -51,4 +54,4 @@ div.tooltip { position: absolute; padding: 5px; font: 12px sans-serif; backgroun
     display: inline-block;
     position: absolute;
     left: 0;
-}
+}*/

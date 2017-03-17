@@ -44,13 +44,21 @@
 </nav>
 
 
-
 <div class="container-fluid">
 
 	<div class="row">
 		<div class="col-md-5">
 
-
+			<div>
+				<div>
+					Format detected: <span class="round" id="format-detected"></span>
+					<span class="round" id="currentTotalChars"></span> characters
+					<span class="round" id="currentTotalWords"></span> words
+					<span class="round" id="currentTotalUniqueWords"></span> unique words
+					<span class="round" id="currentTableLength"></span> edges discovered
+				</div>
+			</div>
+<!--
 			<div class="btn-group format-options-btns" data-toggle="buttons" id="format-options">
 				<label class="btn btn-default btn-sm active">
 					<input type="radio" name="options" id="table">CSV/TSV
@@ -58,22 +66,12 @@
 				<label class="btn btn-default btn-sm">
 					<input type="radio" name="options" id="plain"> plain text
 				</label>
-				<!--<label class="btn btn-default btn-sm">
+				<label class="btn btn-default btn-sm">
 					<input type="radio" name="options" id="json">JSON
-				</label>-->
+				</label>
 			</div>
+-->
 
-			<div class="range-slider-group">
-				<div class="range-slider range-slider-word-limit">
-					<input id="word-limit" type="range" min="10" max="100" value="20" data-rangeslider style="width:100%">
-					<output></output>
-				</div>	
-
-				<div class="range-slider range-slider-edge-limit">
-					<input id="edge-limit" type="range" min="10" max="100" value="40" data-rangeslider style="width:100%">
-					<output></output>
-				</div>	
-			</div>
 
 <!-- ADD THIS LATER
 			<div class="form-inline">
@@ -102,6 +100,20 @@
 			<div id="stats"></div>
 		</div>
 		<div class="col-md-7">
+
+			<div class="range-slider-group">
+				<div class="range-slider range-slider-word-limit">
+					<input id="word-limit" type="range" min="10" max="100" value="100" data-rangeslider style="width:100%">
+					<output></output>
+				</div>	
+<!--
+				<div class="range-slider range-slider-edge-limit">
+					<input id="edge-limit" type="range" min="10" max="100" value="40" data-rangeslider style="width:100%">
+					<output></output>
+				</div>	
+				-->
+			</div>
+		
 			<div id="graph"></div>
 		</div>
 	</div>

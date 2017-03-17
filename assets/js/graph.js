@@ -114,7 +114,7 @@ function draw_graph(data) {
     var manyBody = d3.forceManyBody()
     	// strength accessor to the specified number or function. + nodes attract / - nodes repel. Default -30
     	//.strength(-150)
-    	.strength(- table.length)
+    	.strength(- details.currentTableLength.length)
     ; 
 
     var simulation = d3.forceSimulation()
