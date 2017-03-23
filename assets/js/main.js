@@ -305,7 +305,7 @@ function eval_input(){
 
 function update_table(arr){
 	table = arr;
-	display_table(table,"data-table",10);
+	display_table(table,"data-table",1000);
 }
 
 
