@@ -121,7 +121,7 @@ $(document).ready(function() {
 
 
 	// start
-	$("#sample1").trigger("click");
+	$("#sample-colors-csv").trigger("click");
 
 
 });
