@@ -136,7 +136,7 @@ $(document).ready(function() {
 	});
 
 	// start
-	$("#sample5").trigger("click");
+	$("#sample1").trigger("click");
 
 
 });
@@ -156,9 +156,12 @@ function update_details(currentTotalWords){
 
 
 	// update word-limit-slider max
-	$('.range-slider-word-limit input').attr('max',details.currentTotalWords);
+	//$('.range-slider-word-limit input').attr('max',details.currentTotalWords);
+	// temp: limit word-limit-slider max to 200 words
+	$('.range-slider-word-limit input').attr('max',200);
 	// update rangeslider
 	$('input[type="range"]').rangeslider('update', true);
+	
 }
 
 

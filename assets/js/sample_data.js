@@ -3,6 +3,8 @@
 // sample data
 
 
+var break_string1 = ";asd; ahsdhlaksd';";
+
 var table_colors = [
 	["red","orange"],
 	["orange","yellow"],

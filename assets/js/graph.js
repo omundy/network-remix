@@ -105,7 +105,7 @@ function clear_graph(){
 function draw_graph(data) {
 
 
-	//console.log(data)
+	console.log(data)
     
     // d3v4-force documentation: 
     // https://github.com/d3/d3-force/blob/master/README.md
