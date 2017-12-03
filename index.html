@@ -3,23 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>network-remix</title>
-<link href="assets/libs/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- libraries -->
+<link href="assets/libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="assets/libs/rangeslider.js/dist/rangeslider.css" rel="stylesheet">
+
+<!-- project stylesheet -->
 <link href="assets/css/styles.css" rel="stylesheet">
-<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-<!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
-<script src="assets/libs/jquery.min.js"></script>
-<script src="assets/libs/bootstrap-3.3.7/js/bootstrap.min.js"></script>
-<script src="assets/libs/papaparse.min.js"></script>
-<script src="assets/libs/d3.min.js"></script>
-<script src="assets/libs/rangeslider.js/dist/rangeslider.min.js"></script>
-<script src="assets/js/sample_data.js"></script>
-<script src="assets/js/functions.js"></script>
 </head>
 <body>
 
@@ -51,7 +43,7 @@
 
 			<div>
 				<div>
-					Format detected: <span class="round" id="format-detected"></span> - 
+					Format detected: <span class="round" id="format-detected"></span> -
 					<span class="round" id="currentTotalChars"></span> characters
 					<span class="round" id="currentTotalWords"></span> words
 					<span class="round" id="currentTotalUniqueWords"></span> unique words
@@ -76,7 +68,7 @@
 <!-- ADD THIS LATER
 			<div class="form-inline">
 				<label>Colors</label>
-				Nodes: <input type="text" size="4" class="form-control input-sm" /> 
+				Nodes: <input type="text" size="4" class="form-control input-sm" />
 				Edges: <input type="text" size="4" class="form-control input-sm" />
 			</div>
 -->
@@ -94,7 +86,7 @@
 			<button type="button" class="btn btn-default btn-sm" id="sample5">minima</button>
 
 
-			
+
 
 			<div id="data-table"></div>
 			<div id="stats"></div>
@@ -105,23 +97,32 @@
 				<div class="range-slider range-slider-word-limit">
 					<input id="word-limit" type="range" min="10" max="100" value="100" data-rangeslider style="width:100%">
 					<output></output>
-				</div>	
+				</div>
 <!--
 				<div class="range-slider range-slider-edge-limit">
 					<input id="edge-limit" type="range" min="10" max="100" value="40" data-rangeslider style="width:100%">
 					<output></output>
-				</div>	
+				</div>
 -->
 			</div>
-		
+
 			<div id="graph"></div>
 		</div>
 	</div>
 
 </div>
 
+<!-- libraries -->
+<script src="assets/libs/jquery.min.js"></script>
+<script src="assets/libs/tether/dist/js/tether.min.js"></script>
+<script src="assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="assets/libs/papaparse.min.js"></script>
+<script src="assets/libs/d3.min.js"></script>
+<script src="assets/libs/rangeslider.js/dist/rangeslider.min.js"></script>
+<!-- project code -->
+<script src="assets/js/sample_data.js"></script>
+<script src="assets/js/functions.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/graph.js"></script>
 </body>
 </html>
-
