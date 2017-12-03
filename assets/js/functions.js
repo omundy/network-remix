@@ -3,7 +3,7 @@
  *  These functions are in the public domain
  *  Owen Mundy owenmundy.com
  */
- 
+
 
 
 
@@ -30,10 +30,10 @@ function load_csv(file,callback){
  *  2. is !== null, undefined, NaN, empty string (""), 0, false
  */
 function prop(val){
-    if (typeof val !== 'undefined' && val){ 
-        return true; 
-    } else { 
-        return false; 
+    if (typeof val !== 'undefined' && val){
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -62,25 +62,24 @@ function arr_to_str(arr,delimiter=","){
  */
 function display_table(arr,id,limit){
 
-	var str = '<table class="table table-condensed">';
+	var str = '<table class="table table-sm">';
 
 	// for each row
 	$.each(arr, function( index, row ) {
 		// confine to limit
 		if (index <= limit){
-
 			//console.log(row);
 
 			// create headers with keys on first row only
-			if (index === 0){ 
+			if (index === 0){
 				str += "<thead><th>#</th>";
 				$.each(row, function( key, header ) {
 					str += "<th>column "+ key +"</th>"
 				});
 				str += "</thead>"
 			}
-			
-			// all other rows
+
+			// add all other rows
 			str += "<tr><td>"+ index +"</td>";
 			$.each(row, function( key, val ) {
 				str += "<td>"+ val +"</td>"
@@ -89,11 +88,10 @@ function display_table(arr,id,limit){
 
 		} else {
 			// break from loop
-			//$("#"+id).after("... only "+ limit +" rows displayed");
 			return false;
 		}
-		
 	});
+    // write table
 	$("#"+id).html(str +'</table>');
 }
 
@@ -121,9 +119,9 @@ function countWords(str) {
 
 
 
-/* 
-	FIND UNIQUE WORDS 
-	CREDIT: http://stackoverflow.com/a/30335883/441878 
+/*
+	FIND UNIQUE WORDS
+	CREDIT: http://stackoverflow.com/a/30335883/441878
 	TODO: Find or write a more substantial class to handle all this.
 */
 
@@ -189,18 +187,30 @@ function printTuples(tuples) {
     }).join('\n');
 }
 
-function padStr(str, ch, width, dir) { 
+function padStr(str, ch, width, dir) {
     return (width <= str.length ? str : padStr(dir < 0 ? ch + str : str + ch, ch, width, dir)).substr(0, width);
 }
 
 function toTable(data, headers) {
-    return $('<table class="table table-condensed">').append($('<thead>').append($('<tr>').append(headers.map(function(header) {
-        return $('<th>').html(header);
-    })))).append($('<tbody>').append(data.map(function(row) {
-        return $('<tr>').append(row.map(function(cell) {
-            return $('<td>').html(cell);
-        }));
-    })));
+    return $('<table class="table table-sm">')
+                .append($('<thead>')
+                    .append($('<tr>')
+                        .append(headers.map(function(header) {
+                            return $('<th>').html(header);
+                        }
+                    )
+                )
+            )
+        ).append($('<tbody>')
+            .append(data.map(function(row) {
+                return $('<tr>')
+                    .append(row.map(function(cell) {
+                        if (typeof cell == 'number')
+                            return $('<td class="data-field">').html(cell);
+                        else
+                            return $('<td>').html(cell);
+                    }));
+                })));
 }
 
 function addRowsBefore(table, data) {
@@ -213,23 +223,25 @@ function addRowsBefore(table, data) {
 }
 
 function update_stats(){
+    // get input_text
     var str = $('#input_text').val();
-    var wordFreq = wordFrequency(str);
-    var wordCount = countWords(str);
-    var charCount = countChars(str);
-    var uniqueWords = wordFreq.length;
+    //
+    var wordFreqArr = wordFrequency(str);
+    console.log("wordFreqArr",wordFreqArr)
+    details.currentTotalWords = countWords(str);
+    details.currentTotalChars = countChars(str);
+    details.currentTotalUniqueWords = wordFreqArr.length;
     var summaryData = [
-        [ 'TOTAL CHARACTERS', charCount ],
-        [ 'TOTAL WORDS', wordCount ],
-        [ 'UNIQUE WORDS', uniqueWords ]
+        [ 'TOTAL CHARACTERS', details.currentTotalChars ],
+        [ 'TOTAL WORDS', details.currentTotalWords ],
+        [ 'UNIQUE WORDS', details.currentTotalUniqueWords ]
     ];
-    var table = toTable(wordFreq, ['Word', 'Frequency']);
-    addRowsBefore(table, summaryData);
-    $('#stats').html(table);
+    var table = toTable(wordFreqArr, ['Word', 'Frequency']);
+    //addRowsBefore(table, summaryData);
+    $('#word-frequency').html(table);
 
-    details.currentTotalWords = wordCount;
-    details.currentTotalChars = charCount;
-    details.currentTotalUniqueWords = uniqueWords;
+
+
     $('#currentTotalWords').html(details.currentTotalWords);
     $('#currentTotalChars').html(details.currentTotalChars);
     $('#currentTotalUniqueWords').html(details.currentTotalUniqueWords);
@@ -468,12 +480,3 @@ function bigrams(arr) {
             res.push([arr[i], arr[j]]);
     return res;
 }
-
-
-
-
-
-
-
-
-

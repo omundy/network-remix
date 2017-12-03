@@ -5,9 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>network-remix</title>
+
 <!-- libraries -->
 <link href="assets/libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="assets/libs/rangeslider.js/dist/rangeslider.css" rel="stylesheet">
+
 <!-- project stylesheet -->
 <link href="assets/css/styles.css" rel="stylesheet">
 </head>
@@ -44,15 +46,12 @@
 
 <div class="container-fluid">
 
+
 	<div class="row">
 		<div class="col-md-5">
 
-
-
 			<textarea id="input_text" class="form-control" rows="8"></textarea>
-
 			<div id="msg"></div>
-
 
 			<div class="row mt-3">
 				<div class="col-md-6">
@@ -60,7 +59,7 @@
 
 					<table class="table table-bordered table-sm">
 						<tr>
-							<td>Format detected</td>
+							<td>Input text format</td>
 							<td class="data-field"><span class="" id="format-detected"></span></td>
 						</tr>
 						<tr>
@@ -83,16 +82,17 @@
 
 					<table class="table table-bordered table-sm">
 						<tr>
+							<td>nodes</td>
+							<td class="data-field"><span class="" id="currentNodeLength"></span></td>
+						</tr>
+						<tr>
 							<td>edges</td>
-							<td class="data-field"><span class="" id="currentTableLength"></span></td>
+							<td class="data-field"><span class="" id="currentEdgeLength"></span></td>
 						</tr>
 					</table>
 
 				</div>
 			</div>
-
-
-
 
 <!--
 			<div class="btn-group format-options-btns" data-toggle="buttons" id="format-options">
@@ -110,14 +110,11 @@
 
 
 
-
-
-
-
-
-
 			<div id="data-table"></div>
-			<div id="stats"></div>
+
+			<div><a id="word-frequency-toggle" href="#">Word Frequency</a></div>
+			<div id="word-frequency"></div>
+
 		</div>
 		<div class="col-md-7">
 
@@ -126,12 +123,12 @@
 					<input id="word-limit" type="range" min="10" max="100" value="100" data-rangeslider style="width:100%">
 					<output></output>
 				</div>
-<!--
+
 				<div class="range-slider range-slider-edge-limit">
 					<input id="edge-limit" type="range" min="10" max="100" value="40" data-rangeslider style="width:100%">
 					<output></output>
 				</div>
--->
+
 			</div>
 
 			<div id="graph"></div>
@@ -139,6 +136,8 @@
 	</div>
 
 </div>
+
+
 <!-- libraries -->
 <script src="assets/libs/jquery.min.js"></script>
 <script src="assets/libs/tether/dist/js/tether.min.js"></script>
@@ -146,11 +145,13 @@
 <script src="assets/libs/papaparse.min.js"></script>
 <script src="assets/libs/d3.min.js"></script>
 <script src="assets/libs/rangeslider.js/dist/rangeslider.min.js"></script>
+
 <!-- project code -->
 <script src="assets/js/sample_data.js"></script>
 <script src="assets/js/interface.js"></script>
 <script src="assets/js/functions.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/graph.js"></script>
+
 </body>
 </html>

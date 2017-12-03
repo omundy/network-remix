@@ -6,16 +6,20 @@
 var break_string1 = ";asd; ahsdhlaksd';";
 
 var table_colors = [
-	["red","orange"],
-	["orange","yellow"],
+	["red","cyan"],
+	["cyan","yellow"],
 	["yellow","green"],
-	["green","blue"]
+	["green","blue"],
+	["blue","yellow"],
+	["blue","magenta"]
 ];
 var table_colors_odd_columns = [
-	["red","orange","purple","green"],
-	["orange","yellow"],
+	["red","cyan","green","yellow"],
+	["cyan","yellow","magenta"],
 	["yellow","green"],
-	["green","blue"]
+	["green","blue"],
+	["blue","yellow"],
+	["blue","magenta"]
 ];
 
 var table_eduardo = [

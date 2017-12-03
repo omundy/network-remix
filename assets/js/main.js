@@ -38,11 +38,13 @@ ORDER OF PROGRAM
 
 var table = [],		// main data table; An array of arrays
 	lastinput = "",	// last input from user, check for updates
-	details = { 	// details about current dataset
-		"currentTotalWords":0,
+	details = { 	// storign details about current dataset
 		"currentTotalChars":0,
+		"currentTotalWords":0,
 		"currentTotalUniqueWords":0,
 		"currentTableLength":0,
+		"currentNodeLength":0,
+		"currentEdgeLength":0,
 		"format": "table"
 	},
 	prefs = {		// preferences
@@ -273,7 +275,8 @@ function eval_input(){
 		} else {
 			console.log("************************* Papaparse ERRORS *************************");
 			console.log(JSON.stringify(p.errors));
-			if (str !== "") display_msg('<div class="bg-danger">csv must contain at least one comma</div>');
+			var msg = "Using periods implies plain text analysis, while commas and tabs will be interpreted as table data.";
+			if (str !== "") display_msg('<div class="alert alert-danger">'+ msg +'</div>');
 			update_table(p.data); // try anyway
 		}
 
