@@ -1,5 +1,11 @@
 
 
+
+
+
+
+
+
 .data-table { margin-top: 30px; }
 div.tooltip { position: absolute; padding: 5px; font: 12px sans-serif; background: lightgrey; border: 0px;
     border-radius: 8px; pointer-events: none; }
@@ -8,13 +14,14 @@ div.tooltip { position: absolute; padding: 5px; font: 12px sans-serif; backgroun
 
 
 
+/* D3 */
 
+#graph { border: 1px solid #ddd; }
 .node {
     fill: #ccc;
     stroke: #fff;
     stroke-width: 2px;
 }
-
 .link {
     stroke: #777;
     stroke-width: 2px;
