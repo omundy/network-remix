@@ -24,6 +24,16 @@
 			<li class="nav-item">
 				<a class="nav-link" href="https://github.com/omundy/network-remix" target="_blank">code</a>
 			</li>
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				sample data
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+					<a class="dropdown-item" href="#">Action</a>
+					<a class="dropdown-item" href="#">Another action</a>
+					<a class="dropdown-item" href="#">Something else here</a>
+				</div>
+			</li>
 		</ul>
 	</div>
 </nav>
@@ -34,15 +44,53 @@
 	<div class="row">
 		<div class="col-md-5">
 
-			<div>
-				<div>
-					Format detected: <span class="round" id="format-detected"></span> -
-					<span class="round" id="currentTotalChars"></span> characters
-					<span class="round" id="currentTotalWords"></span> words
-					<span class="round" id="currentTotalUniqueWords"></span> unique words
-					<span class="round" id="currentTableLength"></span> edges found
+
+
+			<textarea id="input_text" class="form-control" rows="8"></textarea>
+
+			<div id="msg"></div>
+
+
+			<div class="row mt-3">
+				<div class="col-md-6">
+					<h5>Text</h5>
+
+					<table class="table table-bordered table-sm">
+						<tr>
+							<td>Format detected</td>
+							<td class="data-field"><span class="" id="format-detected"></span></td>
+						</tr>
+						<tr>
+							<td>characters</td>
+							<td class="data-field"><span class="" id="currentTotalChars"></span></td>
+						</tr>
+						<tr>
+							<td>words</td>
+							<td class="data-field"><span class="" id="currentTotalWords"></span></td>
+						</tr>
+						<tr>
+							<td>unique words</td>
+							<td class="data-field"><span class="" id="currentTotalUniqueWords"></span></td>
+						</tr>
+					</table>
+
+				</div>
+				<div class="col-md-6">
+					<h5>Graph</h5>
+
+					<table class="table table-bordered table-sm">
+						<tr>
+							<td>edges</td>
+							<td class="data-field"><span class="" id="currentTableLength"></span></td>
+						</tr>
+					</table>
+
 				</div>
 			</div>
+
+
+
+
 <!--
 			<div class="btn-group format-options-btns" data-toggle="buttons" id="format-options">
 				<label class="btn btn-default btn-sm active">
@@ -60,17 +108,7 @@
 
 
 
-			<textarea id="input_text" class="form-control" rows="8"></textarea>
 
-			<div id="msg"></div>
-
-			<button type="button" class="btn btn-default btn-sm" id="clear">clear</button>
-			<button type="button" class="btn btn-default btn-sm" id="sample1">sample1</button>
-			<button type="button" class="btn btn-default btn-sm" id="sample1_odd">sample1 (odd columns)</button>
-			<button type="button" class="btn btn-default btn-sm" id="sample2">sample2</button>
-			<button type="button" class="btn btn-default btn-sm" id="sample3">sample2 (TSV)</button>
-			<button type="button" class="btn btn-default btn-sm" id="sample4">moby dick ch.35</button>
-			<button type="button" class="btn btn-default btn-sm" id="sample5">minima</button>
 
 
 
