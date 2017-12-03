@@ -128,7 +128,9 @@ $(document).ready(function() {
 
 });
 
-
+/**
+ *	Inserts sample data into textarea and evaluates
+ */
 function update_input_text(txt){
 	$('#input_text').val(txt);
     eval_input();
@@ -311,6 +313,15 @@ function display_msg(msg){
 function update_graph(table){
 	var dataset = prepare_graph_data(table);
 	//console.log(JSON.stringify(dataset))
+
+
+	// display converted JSON in textarea (this is actually a handy feature for general use)
+	// clean up first
+	var str = JSON.stringify(dataset, null, 2);
+	str = str.replace(/(?:(},\n))/g,"},");
+	str = str.replace(/(?:(    {))/g,"{")
+	str = str.replace(/(?:(\[\n))/g,"\[");
+	$("#d3-network-format").val( str );
 
 	clear_graph();
 	// instead look to see if it exists and redraw

@@ -1,18 +1,27 @@
 /**
- *  Sample Data
+ *  Interface
  */
 
 
 
-$("#data-details-toggle").on("click", function(){
+// dropdowns
+$("#d3-network-format-toggle").on("click", function(e){
+    e.preventDefault();
+    $("#d3-network-format").slideToggle();
+});
+$("#data-details-toggle").on("click", function(e){
+    e.preventDefault();
     $("#data-details").slideToggle();
 });
-$("#data-table-toggle").on("click", function(){
+$("#data-table-toggle").on("click", function(e){
+    e.preventDefault();
     $("#data-table").slideToggle();
 });
-$("#word-frequency-toggle").on("click", function(){
+$("#word-frequency-toggle").on("click", function(e){
+    e.preventDefault();
     $("#word-frequency").slideToggle();
 });
+
 
 /* Sample Data */
 
@@ -26,7 +35,6 @@ $("#sample-colors-csv-odd-columns").on("click", function(){
 $("#sample-colors-tsv").on("click", function(){
     update_input_text(arr_to_str(table_colors,"\t"));
 });
-
 // literature
 $("#sample-moby-dick-36").on("click", function(){
     update_input_text(moby_dick_36);

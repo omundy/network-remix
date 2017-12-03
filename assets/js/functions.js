@@ -74,7 +74,7 @@ function display_table(arr,id,limit){
 			if (index === 0){
 				str += "<thead><th>#</th>";
 				$.each(row, function( key, header ) {
-					str += "<th>column "+ key +"</th>"
+					str += "<th>col"+ key +"</th>"
 				});
 				str += "</thead>"
 			}
@@ -82,7 +82,10 @@ function display_table(arr,id,limit){
 			// add all other rows
 			str += "<tr><td>"+ index +"</td>";
 			$.each(row, function( key, val ) {
-				str += "<td>"+ val +"</td>"
+                if (typeof val == 'number')
+                    str += "<td class='data-field'>"+ val +"</td>";
+                else
+                    str += "<td>"+ val +"</td>"
 			});
 			str += "</tr>"
 
@@ -213,37 +216,23 @@ function toTable(data, headers) {
                 })));
 }
 
-function addRowsBefore(table, data) {
-    table.find('tbody').prepend(data.map(function(row) {
-        return $('<tr>').append(row.map(function(cell) {
-            return $('<td>').html(cell);
-        }));
-    }));
-    return table;
-}
-
+// update and display stats data
 function update_stats(){
-    // get input_text
+    // get input_text string
     var str = $('#input_text').val();
-    // array with most frequent words and their counts
+    // get array with most frequent words and their counts
     var wordFreqArr = wordFrequency(str);
-    var table = toTable(wordFreqArr, ['Word', 'Frequency']);
-    // number of characters
+    // get number of characters
     details.currentTotalChars = countChars(str);
-    // number of words
+    // get number of words
     details.currentTotalWords = countWords(str);
-    // number of unique words
+    // get number of unique words
     details.currentTotalUniqueWords = wordFreqArr.length;
-    var summaryData = [
-        [ 'TOTAL CHARACTERS', details.currentTotalChars ],
-        [ 'TOTAL WORDS', details.currentTotalWords ],
-        [ 'UNIQUE WORDS', details.currentTotalUniqueWords ]
-    ];
-    //addRowsBefore(table, summaryData);
-    $('#word-frequency').html(table);
-
-
-
+    // display data in table headings
+    $("#data-table-records").html("("+ wordFreqArr.length + ")");
+    $("#word-frequency-records").html("("+ wordFreqArr.length + ")");
+    // display data in tables
+    $('#word-frequency').html(toTable(wordFreqArr, ['word', 'frequency']));
     $('#currentTotalWords').html(details.currentTotalWords);
     $('#currentTotalChars').html(details.currentTotalChars);
     $('#currentTotalUniqueWords').html(details.currentTotalUniqueWords);

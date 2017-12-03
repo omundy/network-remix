@@ -4,7 +4,7 @@
 
 
 
-#input_text { width: 100%; }
+#input_text, #d3-network-format { width: 100%; }
 .data-field { text-align: right; }
 
 
@@ -23,6 +23,7 @@ h6 .caret { content: " ";
     margin-left: 6px;
     vertical-align: middle;
 }
+h6 .h6-record-display { font-size: 90%; color: #aaa;}
 
 table { font-size: 90%; }
 th { text-align: center;}

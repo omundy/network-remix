@@ -54,7 +54,9 @@
 			<div id="msg"></div>
 
 
-			<h6><a id="data-details-toggle" href="#">Data details <b class="caret"></b></a></h6>
+			<h6><a id="data-details-toggle" href="#">Data details
+				<span class="h6-record-display" id="data-details-records"></span>
+				<span class="caret"></span></a></h6>
 			<div id="data-details" class="row mt-3">
 				<div class="col-md-6">
 
@@ -72,14 +74,13 @@
 							<td class="data-field"><span class="" id="currentTotalWords"></span></td>
 						</tr>
 						<tr>
-							<td>unique words</td>
+							<td>words (unique)</td>
 							<td class="data-field"><span class="" id="currentTotalUniqueWords"></span></td>
 						</tr>
 					</table>
 
 				</div>
 				<div class="col-md-6">
-
 					<table class="table table-bordered table-sm">
 						<tr>
 							<td>nodes</td>
@@ -90,7 +91,6 @@
 							<td class="data-field"><span class="" id="currentEdgeLength"></span></td>
 						</tr>
 					</table>
-
 				</div>
 			</div>
 
@@ -110,10 +110,19 @@
 
 
 
-			<h6><a id="data-table-toggle" href="#">Interpreted data table <b class="caret"></b></a></h6>
+			<h6><a id="d3-network-format-toggle" href="#">D3 network format (json)
+				<span class="d3-network-format-display" id="d3-network-format-records"></span>
+				<span class="caret"></span></a></h6>
+			<textarea id="d3-network-format" class="form-control prettyprint linenums" rows="8"></textarea>
+
+			<h6><a id="data-table-toggle" href="#">Interpreted data table
+				<span class="h6-record-display" id="data-table-records"></span>
+				<span class="caret"></span></a></h6>
 			<div id="data-table"></div>
 
-			<h6><a id="word-frequency-toggle" href="#">Word Frequency <b class="caret"></b></a></h6>
+			<h6><a id="word-frequency-toggle" href="#">Word Frequency
+				<span class="h6-record-display" id="word-frequency-records"></span>
+				<span class="caret"></span></a></h6>
 			<div id="word-frequency"></div>
 
 		</div>
