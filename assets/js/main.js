@@ -1,6 +1,6 @@
 /**
  *	NetworkRemix - main.js
- *	
+ *
  *
  *
  *
@@ -9,13 +9,13 @@
 ORDER OF PROGRAM
 
 0. init - Page loads
-   
+
    	<dev only> populate form
 
 1. grab data in form <on load> or <if form changed>
 
 	if it is different than before or if format changed
-		
+
 		if no format checked || if CSV checked
 			if no papaparse errors
 				check CSV and convert to table
@@ -38,22 +38,32 @@ ORDER OF PROGRAM
 
 var table = [],		// main data table; An array of arrays
 	lastinput = "",	// last input from user, check for updates
-	details = { "currentTotalWords":0, "currentTotalChars":0, "currentTotalUniqueWords":0, "currentTableLength":0, "format": "table" },
-	prefs = { "minWords":1, "maxWords": 100, "maxEdges": 200 };
+	details = { 	// details about current dataset
+		"currentTotalWords":0,
+		"currentTotalChars":0,
+		"currentTotalUniqueWords":0,
+		"currentTableLength":0,
+		"format": "table"
+	},
+	prefs = {		// preferences
+		"minWords":1,
+		"maxWords": 100,
+		"maxEdges": 200
+	};
 
 
 
 
+// after document has loaded...
+$(document).ready(function() {
 
-$(document).ready(function() { 
 
 
-
-	// rangeslider 
+	// initialize rangeslider
 	var $element = $('[data-rangeslider]');
 	$element.rangeslider({
-	    polyfill: false,	// Deactivate the feature detection
-	    rangeClass: 'rangeslider',	 // Default CSS classes
+	    polyfill: false,
+	    rangeClass: 'rangeslider',
 	    disabledClass: 'rangeslider--disabled',
 	    horizontalClass: 'rangeslider--horizontal',
 	    verticalClass: 'rangeslider--vertical',
@@ -63,15 +73,14 @@ $(document).ready(function() {
 	        saveValue(this.$element[0]);
 	    },
 	    onSlide: function(position, value) {
-	        //console.log('onSlide','position: ' + position, 'value: ' + value);
 	        saveValue(this.$element[0]);
 	    },
 	    onSlideEnd: function(position, value) {
-	        //console.log('onSlide','position: ' + position, 'value: ' + value);
 	        saveValue(this.$element[0]);
 			eval_input();
 	    }
 	});
+
 
 	function saveValue(element) {
 
@@ -109,31 +118,7 @@ $(document).ready(function() {
 	});
 	*/
 
-	// btn: sample data
-	$("#sample1").on("click", function(){ 	
-		update_input_text(arr_to_str(table_colors));
-	});
-	$("#sample1_odd").on("click", function(){ 
-		update_input_text(arr_to_str(table_colors_odd_columns));
-	});
-	$("#sample2").on("click", function(){ 
-		update_input_text(arr_to_str(table_eduardo));
-	});
-	$("#sample3").on("click", function(){ 
-		update_input_text(arr_to_str(table_eduardo,"\t"));
-	});
-	$("#sample4").on("click", function(){ 
-		update_input_text(moby_dick_36);
-	});
-	$("#sample5").on("click", function(){
-		update_input_text(minima_moralia);
-	});
-	// btn: clear
-	$("#clear").on("click", function(){ 
-		$('#input_text').val(""); 
-		svg.selectAll("*").remove();
-        eval_input();
-	});
+
 
 	// start
 	$("#sample1").trigger("click");
@@ -161,7 +146,7 @@ function update_details(currentTotalWords){
 	$('.range-slider-word-limit input').attr('max',200);
 	// update rangeslider
 	$('input[type="range"]').rangeslider('update', true);
-	
+
 }
 
 
@@ -183,7 +168,7 @@ function update_format_btn(format){
 
 /**
  *	Determine if str is table or plain text
- *	@param {String} str - string from the textarea 
+ *	@param {String} str - string from the textarea
  *	@return {String} type - 'table' or 'plain'
  */
 function strTableOrPlain(str){
@@ -214,7 +199,7 @@ function strTableOrPlain(str){
 			console.log( ' --- format notes --- period found, format: plain' );
 			return 'plain';
 		}
-		
+
 		// increment possibilities
 		strType.table += text[i].commas;
 		strType.plain += text[i].periods;
@@ -234,7 +219,7 @@ function strTableOrPlain(str){
 
 
 /**
- *	Evaluate the text input 
+ *	Evaluate the text input
  */
 function eval_input(){
 
@@ -266,14 +251,14 @@ function eval_input(){
 		if (details.format == "plain"){
 			str = parseText(str,prefs.maxWords,prefs.maxEdges);
 		}
-		
+
 
 
 //debugger;
 
 
 /**/
-	
+
 		// and parse it using papaparse: http://papaparse.com/docs
 		var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
 		var p = Papa.parse(str,pconfig);
@@ -328,7 +313,7 @@ function update_graph(table){
 
 	//redraw_graph(dataset);
 	draw_graph(dataset) ;
-}	 
+}
 
 
 
@@ -337,13 +322,13 @@ function update_graph(table){
 /**
  *	Convert a >=3 column table of relationships to 2 columns
  *	@param {Array} table - 3d array
- *	@description 
+ *	@description
  *	1. input: (e.g.) [["red","orange","yellow"],["yellow","green"]]
  *	2. output: (e.g.) [["red","orange"],["orange","yellow"],["yellow","green"]]
  * 	@return {Object} dataset - a json object
  */
 function convertTwoColTable(table){
-	
+
 	var twoColTable = [];
 	// for each row in table
 	for (var row in table){
@@ -369,10 +354,10 @@ function convertTwoColTable(table){
 /**
  *	Prepare graph object for D3 from table data
  *	@param {Array} table - 3d array
- *	@description 
+ *	@description
  *	1. input an array of arrays. (e.g.) [["red","orange"],[...]]
  *	2. convert to nodes and edges. (e.g.) {"nodes":[{"name":"red","value":1},{"name":"orange","value":1}],"edges":[{"source":0,"target":1}]}
- *	3. Tracks occurrences and increments values 
+ *	3. Tracks occurrences and increments values
  * 	@return {Object} dataset - a json object
  */
 function prepare_graph_data(table){
@@ -399,17 +384,17 @@ function prepare_graph_data(table){
 			}
 
 			// clean node name
-			var node = table[row][col].trim();	
+			var node = table[row][col].trim();
 			//console.log(row,col,node);
 
-			// if node does not yet exist 
+			// if node does not yet exist
 			if (node_order.indexOf(node) < 0){
 				// add to node_order
 				node_order.push(node);
 				// add to dataset
-				dataset.nodes.push({ 
-					"label": node, 
-					"r": 1 
+				dataset.nodes.push({
+					"label": node,
+					"r": 1
 				});
 			} else {
 				// or update node count in dataset
@@ -421,27 +406,18 @@ function prepare_graph_data(table){
 			// create a link between current node/col and previous node/col
 			// starting with second column, only those with at least 2 columns
 			if (col > 0 && table[row].length >= 2 ){
-				// push edges 
-				dataset.links.push({ 
+				// push edges
+				dataset.links.push({
 					"source": node_order.indexOf(table[row][col-1]),// new node
-					"target": node_order.indexOf(table[row][col]) 	// next node 
+					"target": node_order.indexOf(table[row][col]) 	// next node
 				});
-			}	
+			}
 		}
 	}
 	// reporting
 	//console.log("  output --> nodes: "+ JSON.stringify(dataset.nodes));
 	//console.log("  output --> links: "+ JSON.stringify(dataset.links));
-	
+
 	// return example_graph;
 	return dataset;
 }
-
-
-
-
-
-
-
-
-
