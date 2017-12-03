@@ -174,7 +174,7 @@ function update_format_btn(format){
  *	@return {String} type - 'table' or 'plain'
  */
 function strTableOrPlain(str){
-	// score each type
+	// create score for each type
     var strType = {'table':0,'plain':0}
 	// split str into lines
 	var text = str.match(/[^\r\n]+/g);
@@ -182,7 +182,6 @@ function strTableOrPlain(str){
 	for (var i=0; i<10; i++){
 		// if line doesn't exist then exit loop
 		if (text[i] == undefined) break;
-
 		// change to object
 		text[i] = {'text':text[i]};
 
@@ -194,11 +193,13 @@ function strTableOrPlain(str){
 		// track commas and periods
 		text[i].commas = (text[i].text.match(/,/g) || []).length;
 		text[i].periods = (text[i].text.match(/\./g) || []).length;
+		text[i].questions = (text[i].text.match(/\?/g) || []).length;
+		text[i].exclaimations = (text[i].text.match(/\!/g) || []).length;
 
 		// early exit option
 		// if period found then return as 'plain'
-		if (text[i].periods >= 1) {
-			console.log( ' --- format notes --- period found, format: plain' );
+		if (text[i].periods >= 1 || text[i].questions >= 1 || text[i].exclaimations >= 1) {
+			console.log( ' --- format notes --- punctuation found, format: plain' );
 			return 'plain';
 		}
 
@@ -275,8 +276,8 @@ function eval_input(){
 		} else {
 			console.log("************************* Papaparse ERRORS *************************");
 			console.log(JSON.stringify(p.errors));
-			var msg = "Using periods implies plain text analysis, while commas and tabs will be interpreted as table data.";
-			if (str !== "") display_msg('<div class="alert alert-danger">'+ msg +'</div>');
+			var msg = "Note: Input with commas or tabs only will be interpreted as table data, while other punctuation causes plain text analysis.";
+			if (str !== "") display_msg('<div class="alert alert-warning">'+ msg +'</div>');
 			update_table(p.data); // try anyway
 		}
 

@@ -225,18 +225,20 @@ function addRowsBefore(table, data) {
 function update_stats(){
     // get input_text
     var str = $('#input_text').val();
-    //
+    // array with most frequent words and their counts
     var wordFreqArr = wordFrequency(str);
-    console.log("wordFreqArr",wordFreqArr)
-    details.currentTotalWords = countWords(str);
+    var table = toTable(wordFreqArr, ['Word', 'Frequency']);
+    // number of characters
     details.currentTotalChars = countChars(str);
+    // number of words
+    details.currentTotalWords = countWords(str);
+    // number of unique words
     details.currentTotalUniqueWords = wordFreqArr.length;
     var summaryData = [
         [ 'TOTAL CHARACTERS', details.currentTotalChars ],
         [ 'TOTAL WORDS', details.currentTotalWords ],
         [ 'UNIQUE WORDS', details.currentTotalUniqueWords ]
     ];
-    var table = toTable(wordFreqArr, ['Word', 'Frequency']);
     //addRowsBefore(table, summaryData);
     $('#word-frequency').html(table);
 

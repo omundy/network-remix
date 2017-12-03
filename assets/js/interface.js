@@ -4,6 +4,12 @@
 
 
 
+$("#data-details-toggle").on("click", function(){
+    $("#data-details").slideToggle();
+});
+$("#data-table-toggle").on("click", function(){
+    $("#data-table").slideToggle();
+});
 $("#word-frequency-toggle").on("click", function(){
     $("#word-frequency").slideToggle();
 });
