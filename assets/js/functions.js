@@ -146,24 +146,6 @@ function padStr(str, ch, width, dir) {
     return (width <= str.length ? str : padStr(dir < 0 ? ch + str : str + ch, ch, width, dir)).substr(0, width);
 }
 
-function toTable(data, headers) {
-    return $('<table class="table table-sm">')
-                .append($('<thead>')
-                    .append($('<tr>')
-                        .append(headers.map(function(header) {
-                            return $('<th>').html(header);
-                        }
-                    )
-                )
-            )
-        ).append($('<tbody>')
-            .append(data.map(function(row) {
-                return $('<tr>')
-                    .append(row.map(function(cell) {
-                        return $('<td>').html(cell);
-                    }));
-                })));
-}
 
 // update and display stats data
 function update_stats(){
@@ -180,7 +162,8 @@ function update_stats(){
     // display data in table headings
     $("#word-frequency-records").html("("+ wordFreqArr.length + ")");
     // display data in tables
-    $('#word-frequency').html(toTable(wordFreqArr, ['word', 'frequency']));
+    //$('#word-frequency').html(toTable(wordFreqArr, ['word', 'frequency']));
+    $('#word-frequency').html(create_table(wordFreqArr, ['word','frequency']));
     $('#currentTotalChars').html(details.currentTotalChars);
     $('#currentTotalWords').html(details.currentTotalWords);
     $('#currentTotalUniqueWords').html(details.currentTotalUniqueWords);

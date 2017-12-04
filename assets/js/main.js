@@ -1,44 +1,35 @@
 /**
  *	NetworkRemix - main.js
- *
- *
- *
- *
-
-
-ORDER OF PROGRAM
-
-0. init - Page loads
-
-   	<dev only> populate form
-
-1. grab data in form <on load> or <if form changed>
-
-	if it is different than before or if format changed
-
-		if no format checked || if CSV checked
-			if no papaparse errors
-				check CSV and convert to table
-			else if pp errors
-				stop + ask user if it is plain text or fix the CSV?
-		if plain checked
-			break into sentences
-			break into tokens
-			convert to table
-
-2. update display table
-3. convert table to JSON
-4. update network graph
-
-
-
-*/
+ */
 "use strict";
+
+/**
+
+How things are
+
+ 1. init - Page loads
+ 2. get data in form <onload> or <if form changed>
+
+ 	A. if it is different than before
+         1.if no papaparse errors
+ 			check CSV and convert to table
+ 		else if pp errors
+ 			stop + ask user if it is plain text or fix the CSV?
+ 	if plain
+ 		break into sentences
+ 		break into tokens
+ 		convert to table
+
+ 3. update display table
+ 4. convert table to JSON
+ 5. update network graph
+*/
+
 
 
 var table = [],		// main data table; An array of arrays
 	lastinput = "",	// last input from user, check for updates
-	details = { 	// storign details about current dataset
+	details = { 	// store details about current dataset
 		"currentTotalChars":0,
 		"currentTotalWords":0,
 		"currentTotalUniqueWords":0,
@@ -59,10 +50,12 @@ var table = [],		// main data table; An array of arrays
 
 // after document has loaded...
 $(document).ready(function() {
+	init_page();
+});
+// 0. initialize page
+function init_page(){
 
-
-
-	// initialize rangeslider
+	// add rangeslider
 	var $element = $('[data-rangeslider]');
 	$element.rangeslider({
 	    polyfill: false,
@@ -73,61 +66,28 @@ $(document).ready(function() {
 	    fillClass: 'rangeslider__fill',
 	    handleClass: 'rangeslider__handle',
 	    onInit: function() {
-	        saveValue(this.$element[0]);
+	        saveRangeSliderValue(this.$element[0]);
 	    },
 	    onSlide: function(position, value) {
-	        saveValue(this.$element[0]);
+	        saveRangeSliderValue(this.$element[0]);
 	    },
 	    onSlideEnd: function(position, value) {
-	        saveValue(this.$element[0]);
+	        saveRangeSliderValue(this.$element[0]);
 			eval_input();
 	    }
 	});
 
-
-	function saveValue(element) {
-
-		// display output
-		var textContent = ('textContent' in document) ? 'textContent' : 'innerText';
-		var output = element.parentNode.getElementsByTagName('output')[0] || element.parentNode.parentNode.getElementsByTagName('output')[0];
-		var type;
-
-		// update preferences
-		if (element.id == "word-limit"){
-			prefs.maxWords = element.value;
-			type = "words";
-		} else if (element.id == "edge-limit"){
-			prefs.maxEdges = element.value;
-			type = "edges";
-		}
-		output[textContent] = element.value + " " + type;
-	}
-
-
-	/**
-	 *	Forms, buttons, etc.
-	 */
-
 	// listen for keyup or change in textarea
-    $('#input_text').on('keyup change', function() {
-        eval_input();
-    });
-    /*
-	// listen for format change
-	$(document).on('change', '#format-options input', function (e) {
-	    details.format = $('#format-options .active input').attr('id');
-	    eval_input();
-	    //console.log("format updated: "+formatSelected);
+	$('#input_text').on('keyup change', function() {
+		eval_input();
 	});
-	*/
 
-
-
-	// start
+	// start app
 	$("#sample-colors-csv").trigger("click");
+}
 
 
-});
+
 
 /**
  *	Inserts sample data into textarea and evaluates
@@ -299,13 +259,14 @@ function eval_input(){
 
 
 function update_table(arr){
+	// store table
 	table = arr;
     // get current number of rows in data table
     details.currentTableLength = table.length;
     // display data in table headings
     $('#data-table-records').html("("+ details.currentTableLength + ")");
-	// display table in html
-	display_table(table,"data-table",1000);
+	// write table
+	$("#data-table").html( create_table(table) );
 }
 
 

@@ -6,8 +6,9 @@ body { font-family: 'Open Sans', sans-serif; }
 textarea, pre { font: .9rem/1.1rem 'Anonymous Pro', monospace !important; color: #555; }
 .round { border-radius: 4px; background: rgba(255,0,17,.25); padding: 3px 4px; margin: 5px 0 0 0 }
 table { font-size: 90%; }
-th { text-align: center; font-weight: bold;}
+thead, th { text-align: center; font-weight: bold;}
 td { text-align: center;}
+td.num { color: #999 !important; }
 
 /* FORMS/INTERFACE */
 
@@ -23,10 +24,10 @@ h6 .caret { content: " "; width: 0; height: 0; display: inline-block; margin-lef
     border-left: 4px solid rgba(0, 0, 0, 0); border-right: 4px solid rgba(0, 0, 0, 0); border-top: 4px solid; }
 h6 .h6-record-display { font-size: 90%; color: #aaa;}
 
-/* HIDE ON LOAD */
+/* HIDE ON LOAD
 
 #data-table { display: none; }
-#word-frequency { display: none; }
+#word-frequency { display: none; }*/
 
 /* D3 */
 
@@ -42,7 +43,7 @@ h6 .h6-record-display { font-size: 90%; color: #aaa;}
 }
 div.tooltip { position: absolute; padding: 5px; border: 0px; border-radius: 8px; pointer-events: none;
     font: 12px 'Anonymous Pro', monospace; background: rgba(0,0,0,0.5); }
-/* make viz responsive */
+/* make viz responsive
 .svg-container {
     display: inline-block;
     position: relative;
@@ -56,7 +57,7 @@ div.tooltip { position: absolute; padding: 5px; border: 0px; border-radius: 8px;
     position: absolute;
     left: 0;
 }
-
+*/
 /* range-slider */
 
 .range-slider-group { width: 300px; height: 80px; float: right; }
