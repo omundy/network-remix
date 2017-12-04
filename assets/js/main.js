@@ -43,6 +43,7 @@ var table = [],		// main data table; An array of arrays
 		"currentTotalWords":0,
 		"currentTotalUniqueWords":0,
 		"currentTableLength":0,
+		"currentTableLength":0,
 		"currentNodeLength":0,
 		"currentEdgeLength":0,
 		"format": "table"
@@ -299,14 +300,17 @@ function eval_input(){
 
 function update_table(arr){
 	table = arr;
+    // get current number of rows in data table
+    details.currentTableLength = table.length;
+    // display data in table headings
+    $('#data-table-records').html("("+ details.currentTableLength + ")");
+	// display table in html
 	display_table(table,"data-table",1000);
 }
 
 
 
-function display_msg(msg){
-	$('#msg').html(msg);
-}
+
 
 
 
@@ -314,6 +318,11 @@ function update_graph(table){
 	var dataset = prepare_graph_data(table);
 	//console.log(JSON.stringify(dataset))
 
+	// store and display details about network
+	details.currentNodeLength = dataset.nodes.length;
+	details.currentEdgeLength = dataset.links.length;
+    $('#currentNodeLength').html(details.currentNodeLength);
+    $('#currentEdgeLength').html(details.currentEdgeLength);
 
 	// display converted JSON in textarea (this is actually a handy feature for general use)
 	// clean up first

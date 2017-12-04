@@ -57,50 +57,6 @@ function arr_to_str(arr,delimiter=","){
 
 
 
-/**
- *	Display CSV table in HTML
- */
-function display_table(arr,id,limit){
-
-	var str = '<table class="table table-sm">';
-
-	// for each row
-	$.each(arr, function( index, row ) {
-		// confine to limit
-		if (index <= limit){
-			//console.log(row);
-
-			// create headers with keys on first row only
-			if (index === 0){
-				str += "<thead><th>#</th>";
-				$.each(row, function( key, header ) {
-					str += "<th>col"+ key +"</th>"
-				});
-				str += "</thead>"
-			}
-
-			// add all other rows
-			str += "<tr><td>"+ index +"</td>";
-			$.each(row, function( key, val ) {
-                if (typeof val == 'number')
-                    str += "<td class='data-field'>"+ val +"</td>";
-                else
-                    str += "<td>"+ val +"</td>"
-			});
-			str += "</tr>"
-
-		} else {
-			// break from loop
-			return false;
-		}
-	});
-    // write table
-	$("#"+id).html(str +'</table>');
-}
-
-
-
-
 
 
 
@@ -115,10 +71,6 @@ function countWords(str) {
 	return str.split(/[\s,]+/).length;
 }
 // e.g. var report = countChars(str) +" characters and "+ countWords(str) +" words";
-
-
-
-
 
 
 
@@ -208,10 +160,7 @@ function toTable(data, headers) {
             .append(data.map(function(row) {
                 return $('<tr>')
                     .append(row.map(function(cell) {
-                        if (typeof cell == 'number')
-                            return $('<td class="data-field">').html(cell);
-                        else
-                            return $('<td>').html(cell);
+                        return $('<td>').html(cell);
                     }));
                 })));
 }
@@ -229,12 +178,11 @@ function update_stats(){
     // get number of unique words
     details.currentTotalUniqueWords = wordFreqArr.length;
     // display data in table headings
-    $("#data-table-records").html("("+ wordFreqArr.length + ")");
     $("#word-frequency-records").html("("+ wordFreqArr.length + ")");
     // display data in tables
     $('#word-frequency').html(toTable(wordFreqArr, ['word', 'frequency']));
-    $('#currentTotalWords').html(details.currentTotalWords);
     $('#currentTotalChars').html(details.currentTotalChars);
+    $('#currentTotalWords').html(details.currentTotalWords);
     $('#currentTotalUniqueWords').html(details.currentTotalUniqueWords);
 };
 

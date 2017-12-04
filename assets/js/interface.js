@@ -3,8 +3,54 @@
  */
 
 
+/**
+ *  Display a message under the input_text box
+ */
+function display_msg(msg){
+    $('#msg').html(msg);
+}
 
-// dropdowns
+
+/**
+ *	Display CSV table in HTML
+ */
+function display_table(arr,id,limit){
+
+	var str = '<table class="table table-sm">';
+
+	// for each row
+	$.each(arr, function( index, row ) {
+		// confine to limit
+		if (index <= limit){
+			//console.log(row);
+
+			// create headers with keys on first row only
+			if (index === 0){
+				str += "<thead><th>#</th>";
+				$.each(row, function( key, header ) {
+					str += "<th>col"+ key +"</th>"
+				});
+				str += "</thead>"
+			}
+
+			// add all other rows
+			str += "<tr><td>"+ index +"</td>";
+			$.each(row, function( key, val ) {
+                str += "<td>"+ val +"</td>"
+			});
+			str += "</tr>"
+
+		} else {
+			// break from loop
+			return false;
+		}
+	});
+    // write table
+	$("#"+id).html(str +'</table>');
+}
+
+/* Sliders */
+
 $("#d3-network-format-toggle").on("click", function(e){
     e.preventDefault();
     $("#d3-network-format").slideToggle();
