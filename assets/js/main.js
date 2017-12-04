@@ -61,7 +61,79 @@ function init_page(){
 		eval_input();
 	});
 	// start app
-	$("#sample-colors-csv").trigger("click");
+	$("#sample-sportsball-csv").trigger("click");
+}
+
+
+
+/**
+ *	Evaluate the text input
+ */
+function eval_input(){
+	// report prefs/details
+	console.log("\nNEW INPUT DETECTED")
+	console.dirxml(" --- preferences --- ", prefs);
+	console.dirxml(" --- details --- ", details);
+
+	// get current data in textarea and limit
+	var str = $('#input_text').val().trim();
+
+	// if input is empty exit early
+	if (str === "") return;
+
+	// if input is different then continue
+    if (str !== lastinput){
+
+    	// determine type of input (table vs. plain text)
+    	details.format = strTableOrPlain(str);
+		// update format
+	    $('#format-detected').html(details.format);
+		// update the format button
+		//update_format_btn(details.format);
+
+		// format plain text as a table
+		if (details.format == "plain"){
+			str = parseText(str,prefs.maxWords,prefs.maxEdges);
+		}
+		// and parse it using papaparse: http://papaparse.com/docs
+		var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
+		var p = Papa.parse(str,pconfig);
+		// only proceed if there are no errors
+		//console.log("INPUT CHANGE: "JSON.stringify(p));
+		update_stats(str);
+		// if no errors
+		if (p.errors.length < 1){
+
+			console.log("p.data",p.data);
+
+			// if we have a custom format
+			if (details.format == "customTable"){
+				// store and remove header row
+				var headerRow = p.data[0];
+				p.data.shift();
+				// loop through each row
+				for (var i=0,l=p.data.length; i<l; i++){
+					// remove first index
+
+				}
+			}
+
+			update_data_table(p.data);
+			display_msg('');
+			update_graph(table);
+		} else {
+			console.log("************************* Papaparse ERRORS *************************");
+			console.log(JSON.stringify(p.errors));
+			var msg = "Note: Input with commas or tabs only will be interpreted as table data, while other punctuation causes plain text analysis.";
+			if (str !== "") display_msg('<div class="alert alert-warning">'+ msg +'</div>');
+			update_data_table(p.data); // try anyway
+		}
+	}
+	// remove graph if string empty
+	if (str == "")
+		svg.selectAll("*").remove();
+	// update lastinput
+	lastinput = str.trim();
 }
 
 
@@ -72,13 +144,21 @@ function init_page(){
  */
 function strTableOrPlain(str){
 	// create score for each type
-    var strType = {'table':0,'plain':0}
+    var strType = {'table':0,'plain':0,'customTable':0}
 	// split str into lines
 	var text = str.match(/[^\r\n]+/g);
 	// look at lines to determine if we should treat as table or plain text
 	for (var i=0; i<10; i++){
 		// if line doesn't exist then exit loop
 		if (text[i] == undefined) break;
+
+		// determine if we need a custom format
+		if (str.slice(0,1) == "*"){
+			strType.customTable = 1;
+			console.log(str.slice(0,1))
+			break;
+		}
+
 		// change to object
 		text[i] = {'text':text[i]};
 
@@ -105,7 +185,9 @@ function strTableOrPlain(str){
 
 		//console.log('',i,'/',text.length, JSON.stringify(text[i]), JSON.stringify(strType) );
 	}
-	if (strType.table >= strType.plain){
+	if (strType.customTable == 1){
+		var type = 'customTable';
+	} else if (strType.table >= strType.plain){
 		var type = 'table';
 	} else if (strType.table < strType.plain){
 		var type = 'plain';
@@ -115,63 +197,6 @@ function strTableOrPlain(str){
 }
 
 
-
-/**
- *	Evaluate the text input
- */
-function eval_input(){
-	// report prefs/details
-	console.log("\nNEW INPUT DETECTED")
-	console.dirxml(" --- preferences --- ", prefs);
-	console.dirxml(" --- details --- ", details);
-
-	// get current data in textarea and limit
-	var str = $('#input_text').val().trim();
-
-	// if input is empty exit early
-	if (str === "") return;
-
-	// if input is different then continue
-    if (str !== lastinput){
-
-    	// determine type of input (table vs. plain text)
-    	details.format = strTableOrPlain(str);
-
-		// update the format button
-		//update_format_btn(details.format);
-
-		// update format
-	    $('#format-detected').html(details.format);
-
-		// format plain text as a table
-		if (details.format == "plain"){
-			str = parseText(str,prefs.maxWords,prefs.maxEdges);
-		}
-		// and parse it using papaparse: http://papaparse.com/docs
-		var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
-		var p = Papa.parse(str,pconfig);
-		// only proceed if there are no errors
-		//console.log("INPUT CHANGE: "JSON.stringify(p));
-		update_stats(str);
-		// if no errors
-		if (p.errors.length < 1){
-			update_data_table(p.data);
-			display_msg('');
-			update_graph(table);
-		} else {
-			console.log("************************* Papaparse ERRORS *************************");
-			console.log(JSON.stringify(p.errors));
-			var msg = "Note: Input with commas or tabs only will be interpreted as table data, while other punctuation causes plain text analysis.";
-			if (str !== "") display_msg('<div class="alert alert-warning">'+ msg +'</div>');
-			update_data_table(p.data); // try anyway
-		}
-	}
-	// remove graph if string empty
-	if (str == "")
-		svg.selectAll("*").remove();
-	// update lastinput
-	lastinput = str.trim();
-}
 
 /**
  *	Update the data-table

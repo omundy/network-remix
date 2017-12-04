@@ -22,8 +22,100 @@ var table_colors_odd_columns = [
 	["blue","magenta"]
 ];
 
+
+var table_sportball_after = {
+  "nodes": [{
+      "label": "player1",
+      "r": 1
+    },{
+      "label": "touchdowns",
+      "r": 2
+    },{
+      "label": "rushes",
+      "r": 1
+    },{
+      "label": "interceptions",
+      "r": 3
+    },{
+      "label": "player2",
+      "r": 1
+    },{
+      "label": "touchdowns",
+      "r": 5
+    },{
+      "label": "rushes",
+      "r": 2
+    },{
+      "label": "interceptions",
+      "r": 5
+    }
+  ],
+  "links": [{
+      "source": 0,
+      "target": 1
+    },{
+      "source": 0,
+      "target": 2
+    },{
+      "source": 0,
+      "target": 3
+    },{
+      "source": 4,
+      "target": 5
+    },{
+      "source": 4,
+      "target": 6
+    },{
+      "source": 4,
+      "target": 7
+    }
+]
+}
+
 var table_sportball = [
-	["Name","Touchdown","rushes","Interceptions"],
+
+["player1","touchdowns-p1"],
+["player1","touchdowns-p1"],
+["player1","rushes-p1"],
+["player1","interceptions-p1"],
+["player1","interceptions-p1"],
+["player1","interceptions-p1"],
+
+["player2","touchdowns-p2"],
+["player2","touchdowns-p2"],
+["player2","touchdowns-p2"],
+["player2","touchdowns-p2"],
+["player2","touchdowns-p2"],
+["player2","rushes-p2"],
+["player2","rushes-p2"],
+["player2","interceptions-p2"],
+["player2","interceptions-p2"],
+["player2","interceptions-p2"],
+["player2","interceptions-p2"],
+["player2","interceptions-p2"],
+
+["player3","touchdowns-p3"],
+["player3","touchdowns-p3"],
+["player3","touchdowns-p3"],
+["player3","touchdowns-p3"],
+["player3","touchdowns-p3"],
+["player3","touchdowns-p3"],
+["player3","rushes-p3"],
+["player3","rushes-p3"],
+["player3","interceptions-p3"],
+
+["player4","touchdowns-p4"],
+["player4","touchdowns-p4"],
+["player4","touchdowns-p4"],
+["player4","touchdowns-p4"],
+["player4","touchdowns-p4"],
+["player4","rushes-p4"],
+["player4","rushes-p4"],
+["player4","interceptions-p4"],
+];
+
+var table_sportball = [
+	["*name","touchdowns","rushes","interceptions"],
 	["player1",2,1,3],
 	["player2",5,2,5],
 	["player3",6,2,1],

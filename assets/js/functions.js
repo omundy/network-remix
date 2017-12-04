@@ -242,7 +242,6 @@ function parseText(text,wordLimit=-1,connectionLimit=3){
     console.log("topWords.length = "+ topWords.length, ", wordLimit = ", wordLimit);
     //console.log( JSON.stringify(topWords) );
 
-
     // find the positions of each of these topWords
     for (var i=0; i<topWords.length; i++){
         //console.log(i +". "+ JSON.stringify(topWords[i]));

@@ -32,7 +32,7 @@ var simulation = d3.forceSimulation()
 
 
 
-	var edges = svg.selectAll("line.link") 
+	var edges = svg.selectAll("line.link")
 		.data(data.edges)
 		.enter()
 		.append("line")
@@ -43,12 +43,12 @@ var simulation = d3.forceSimulation()
 
 	force.on("tick", function() {
 		edges.attr("x1", function(d) { return d.source.x; })
-			.attr("y1", function(d) { return d.source.y; }) 
-			.attr("x2", function(d) { return d.target.x; }) 
+			.attr("y1", function(d) { return d.source.y; })
+			.attr("x2", function(d) { return d.target.x; })
 			.attr("y2", function(d) { return d.target.y; });
-		nodes.attr("cx", function(d) { return d.x; }) 
+		nodes.attr("cx", function(d) { return d.x; })
 			.attr("cy", function(d) { return d.y; });
-	});		
+	});
 
 }
 
@@ -60,9 +60,9 @@ var simulation = d3.forceSimulation()
 
 /**
  *	Draw the network graph
- *	Based on https://bl.ocks.org/shimizu/e6209de87cdddde38dadbb746feaf3a3	
+ *	Based on https://bl.ocks.org/shimizu/e6209de87cdddde38dadbb746feaf3a3
  */
-   
+
 
 
 
@@ -88,8 +88,8 @@ var graphLayer = svg.append("g")
 
 
 // create div for the tooltip
-var tooltip = d3.select("body").append("div")	
-    .attr("class", "tooltip")				
+var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
     .style("opacity", 0);
 
 
@@ -106,8 +106,8 @@ function draw_graph(data) {
 
 
 	console.log(data)
-    
-    // d3v4-force documentation: 
+
+    // d3v4-force documentation:
     // https://github.com/d3/d3-force/blob/master/README.md
 
 	// many-body force applies mutually to all nodes
@@ -115,7 +115,7 @@ function draw_graph(data) {
     	// strength accessor to the specified number or function. + nodes attract / - nodes repel. Default -30
     	//.strength(-150)
     	.strength(- details.currentTableLength.length)
-    ; 
+    ;
 
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.index }))
@@ -148,7 +148,7 @@ function draw_graph(data) {
 	var nodeStroke = "rgba(255, 0," + rColor +", 0.25)";
 	var textFill = "rgba(0,0,0,1)";
 
-    
+
     var node = svg.append("g")
         .attr("class", "nodes")
         .selectAll("circle")
@@ -161,11 +161,11 @@ function draw_graph(data) {
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
-            .on("end", dragended));    
-    
+            .on("end", dragended));
 
 
-    svg.selectAll("circle")	
+
+    svg.selectAll("circle")
 		.on("mouseover", function(d) {
 			//console.log(d3.select(this).attr("id")); // log circle id
 			// show tooltip
@@ -182,7 +182,7 @@ function draw_graph(data) {
 				.duration(500)
 				.style("opacity", 0);
 		});
-    
+
 	var texts = svg.selectAll("text")
     	.data(data.nodes)
     	.enter()
@@ -192,7 +192,7 @@ function draw_graph(data) {
 			.attr("font-size", "11px")
 			.attr("fill", textFill);
 
-    	
+
 
     var ticked = function() {
         link
@@ -207,38 +207,38 @@ function draw_graph(data) {
 
         texts
         	.attr("x", function(d){ return d.x +5; })
-	    	.attr("y", function(d){ return d.y -5; })	
-        	    
-    }  
-    
+	    	.attr("y", function(d){ return d.y -5; })
+
+    }
+
     simulation
         .nodes(data.nodes)
         .on("tick", ticked);
 
     simulation.force("link")
-        .links(data.links);    
-    
+        .links(data.links);
 
-    
-    
-    
+
+
+
+
     function dragstarted(d) {
         if (!d3.event.active) simulation.alphaTarget(0.3).restart();
         d.fx = d.x;
         d.fy = d.y;
     }
-    
+
     function dragged(d) {
         d.fx = d3.event.x;
         d.fy = d3.event.y;
     }
-    
+
     function dragended(d) {
         if (!d3.event.active) simulation.alphaTarget(0);
         d.fx = null;
         d.fy = null;
-    } 
-            
+    }
+
 }
 
 
