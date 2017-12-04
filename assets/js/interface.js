@@ -9,8 +9,54 @@
 function display_msg(msg){
     $('#msg').html(msg);
 }
+/**
+ *	Inserts sample data into textarea and evaluates
+ */
+function update_input_text(txt){
+	$('#input_text').val(txt);
+    eval_input();
+}
+
+/**
+ *	Change the format to match incoming text
+ *	@param {String} formatId - 'table' or 'plain'
+ */
+function update_format_btn(format){
+	// remove .active class from current .active
+	$('#format-options .active ').removeClass('active');
+	// add .active class to new id
+	$("#"+format).parent().addClass('active');
+	// save new format
+	details.format = $('#format-options .active input').attr('id');
+	//console.log("formatSelected:", formatSelected, "formatId:", formatId);
+}
 
 
+/**
+ *	Add rangeslider
+ */
+function addRangeSlider(){
+    var $element = $('[data-rangeslider]');
+    $element.rangeslider({
+        polyfill: false,
+        rangeClass: 'rangeslider',
+        disabledClass: 'rangeslider--disabled',
+        horizontalClass: 'rangeslider--horizontal',
+        verticalClass: 'rangeslider--vertical',
+        fillClass: 'rangeslider__fill',
+        handleClass: 'rangeslider__handle',
+        onInit: function() {
+            saveRangeSliderValue(this.$element[0]);
+        },
+        onSlide: function(position, value) {
+            saveRangeSliderValue(this.$element[0]);
+        },
+        onSlideEnd: function(position, value) {
+            saveRangeSliderValue(this.$element[0]);
+            eval_input();
+        }
+    });
+}
 /**
  *	Saves values from rangeslider(s)
  */
@@ -30,6 +76,14 @@ function saveRangeSliderValue(element) {
 		type = "edges";
 	}
 	output[textContent] = element.value + " " + type;
+}
+function updateRangeSliderTotal(id,currentTotalWords){
+	// update word-limit-slider max
+	$(id +' input').attr('max',details.currentTotalWords);
+	// temp: limit word-limit-slider max to 200 words
+	//$('.range-slider-word-limit input').attr('max',200);
+	// update rangeslider
+	$('input[type="range"]').rangeslider('update', true);
 }
 
 
@@ -115,6 +169,9 @@ $("#sample-colors-csv-odd-columns").on("click", function(){
 });
 $("#sample-colors-tsv").on("click", function(){
     update_input_text(arr_to_str(table_colors,"\t"));
+});
+$("#sample-sportsball-csv").on("click", function(){
+    update_input_text(arr_to_str(table_sportball));
 });
 // literature
 $("#sample-moby-dick-36").on("click", function(){

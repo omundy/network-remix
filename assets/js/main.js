@@ -54,81 +54,15 @@ $(document).ready(function() {
 });
 // 0. initialize page
 function init_page(){
-
 	// add rangeslider
-	var $element = $('[data-rangeslider]');
-	$element.rangeslider({
-	    polyfill: false,
-	    rangeClass: 'rangeslider',
-	    disabledClass: 'rangeslider--disabled',
-	    horizontalClass: 'rangeslider--horizontal',
-	    verticalClass: 'rangeslider--vertical',
-	    fillClass: 'rangeslider__fill',
-	    handleClass: 'rangeslider__handle',
-	    onInit: function() {
-	        saveRangeSliderValue(this.$element[0]);
-	    },
-	    onSlide: function(position, value) {
-	        saveRangeSliderValue(this.$element[0]);
-	    },
-	    onSlideEnd: function(position, value) {
-	        saveRangeSliderValue(this.$element[0]);
-			eval_input();
-	    }
-	});
-
+	addRangeSlider();
 	// listen for keyup or change in textarea
 	$('#input_text').on('keyup change', function() {
 		eval_input();
 	});
-
 	// start app
 	$("#sample-colors-csv").trigger("click");
 }
-
-
-
-
-/**
- *	Inserts sample data into textarea and evaluates
- */
-function update_input_text(txt){
-	$('#input_text').val(txt);
-    eval_input();
-}
-
-function update_details(currentTotalWords){
-
-
-	details.currentTotalWords = currentTotalWords;
-
-
-
-
-	// update word-limit-slider max
-	//$('.range-slider-word-limit input').attr('max',details.currentTotalWords);
-	// temp: limit word-limit-slider max to 200 words
-	$('.range-slider-word-limit input').attr('max',200);
-	// update rangeslider
-	$('input[type="range"]').rangeslider('update', true);
-
-}
-
-
-/**
- *	Change the format to match incoming text
- *	@param {String} formatId - 'table' or 'plain'
- */
-function update_format_btn(format){
-	// remove .active class from current .active
-	$('#format-options .active ').removeClass('active');
-	// add .active class to new id
-	$("#"+format).parent().addClass('active');
-	// save new format
-	details.format = $('#format-options .active input').attr('id');
-	//console.log("formatSelected:", formatSelected, "formatId:", formatId);
-}
-
 
 
 /**
@@ -160,19 +94,17 @@ function strTableOrPlain(str){
 		text[i].exclaimations = (text[i].text.match(/\!/g) || []).length;
 
 		// early exit option
-		// if period found then return as 'plain'
+		// if period or other punctuation found then return as 'plain'
 		if (text[i].periods >= 1 || text[i].questions >= 1 || text[i].exclaimations >= 1) {
 			console.log( ' --- format notes --- punctuation found, format: plain' );
 			return 'plain';
 		}
-
 		// increment possibilities
 		strType.table += text[i].commas;
 		strType.plain += text[i].periods;
 
 		//console.log('',i,'/',text.length, JSON.stringify(text[i]), JSON.stringify(strType) );
 	}
-
 	if (strType.table >= strType.plain){
 		var type = 'table';
 	} else if (strType.table < strType.plain){
@@ -188,10 +120,8 @@ function strTableOrPlain(str){
  *	Evaluate the text input
  */
 function eval_input(){
-
-	console.log("\nNEW INPUT DETECTED")
-
 	// report prefs/details
+	console.log("\nNEW INPUT DETECTED")
 	console.dirxml(" --- preferences --- ", prefs);
 	console.dirxml(" --- details --- ", details);
 
@@ -217,14 +147,6 @@ function eval_input(){
 		if (details.format == "plain"){
 			str = parseText(str,prefs.maxWords,prefs.maxEdges);
 		}
-
-
-
-//debugger;
-
-
-/**/
-
 		// and parse it using papaparse: http://papaparse.com/docs
 		var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
 		var p = Papa.parse(str,pconfig);
@@ -233,7 +155,7 @@ function eval_input(){
 		update_stats(str);
 		// if no errors
 		if (p.errors.length < 1){
-			update_table(p.data);
+			update_data_table(p.data);
 			display_msg('');
 			update_graph(table);
 		} else {
@@ -241,42 +163,36 @@ function eval_input(){
 			console.log(JSON.stringify(p.errors));
 			var msg = "Note: Input with commas or tabs only will be interpreted as table data, while other punctuation causes plain text analysis.";
 			if (str !== "") display_msg('<div class="alert alert-warning">'+ msg +'</div>');
-			update_table(p.data); // try anyway
+			update_data_table(p.data); // try anyway
 		}
-
-
-
 	}
-	if (str == ""){
+	// remove graph if string empty
+	if (str == "")
 		svg.selectAll("*").remove();
-	}
-	lastinput = str.trim(); // update lastinput
-
+	// update lastinput
+	lastinput = str.trim();
 }
 
-
-
-
-
-function update_table(arr){
-	// store table
+/**
+ *	Update the data-table
+ */
+function update_data_table(arr){
+	// store data
 	table = arr;
-    // get current number of rows in data table
+    // store current number of rows in data table
     details.currentTableLength = table.length;
-    // display data in table headings
+    // display data length in table headings
     $('#data-table-records').html("("+ details.currentTableLength + ")");
 	// write table
 	$("#data-table").html( create_table(table) );
 }
 
 
-
-
-
-
-
+/**
+ *	Update the graph
+ */
 function update_graph(table){
-	var dataset = prepare_graph_data(table);
+	var dataset = convert_table_to_d3_network(table);
 	//console.log(JSON.stringify(dataset))
 
 	// store and display details about network
@@ -345,14 +261,14 @@ function convertTwoColTable(table){
  *	3. Tracks occurrences and increments values
  * 	@return {Object} dataset - a json object
  */
-function prepare_graph_data(table){
-
-	//console.log("prepare_graph_data()");
+function convert_table_to_d3_network(table){
+	//console.log("convert_table_to_d3_network()");
 
 	var dataset = {"nodes":[],"links":[]},	// dataset to build
 		node_order = [];					// array to track node order
 
-	table = convertTwoColTable(table);		// make sure this is a two-column table
+	// make sure this is a two-column table
+	table = convertTwoColTable(table);
 	//console.log("table",table)
 
 	// for each row in table

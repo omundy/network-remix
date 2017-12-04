@@ -22,14 +22,15 @@ var table_colors_odd_columns = [
 	["blue","magenta"]
 ];
 
-var table_eduardo = [
-	["Alicia","Eduardo"],
-	["Oscar","Eduardo"],
-	["Annie","Oscar"],
-	["Eddie","Oscar"],
-	["Oliver","Eddie"],
-	["Annie","Oliver"]
+var table_sportball = [
+	["Name","Touchdown","rushes","Interceptions"],
+	["player1",2,1,3],
+	["player2",5,2,5],
+	["player3",6,2,1],
+	["player4",5,2,1],
 ];
+
+
 
 var example_graph = {"nodes":[{"label":"red","r":12},{"label":"orange","r":15},{"label":"yellow","r":15},{"label":"green","r":14},{"label":"blue","r":11}],
 				   	 "links":[{"source":0,"target":1},{"source":1,"target":2},{"source":2,"target":3},{"source":3,"target":4}]};
