@@ -128,6 +128,35 @@ var example_graph = {"nodes":[{"label":"red","r":12},{"label":"orange","r":15},{
 				   	 "links":[{"source":0,"target":1},{"source":1,"target":2},{"source":2,"target":3},{"source":3,"target":4}]};
 
 
+//A Dream Within A Dream by Edgar Allan Poe
+var poe_dream = `Take this kiss upon the brow!
+And, in parting from you now,
+Thus much let me avow--
+You are not wrong, who deem
+That my days have been a dream;
+Yet if hope has flown away
+In a night, or in a day,
+In a vision, or in none,
+Is it therefore the less gone?
+All that we see or seem
+Is but a dream within a dream.
+
+I stand amid the roar
+Of a surf-tormented shore,
+And I hold within my hand
+Grains of the golden sand--
+How few! yet how they creep
+Through my fingers to the deep,
+While I weep--while I weep!
+O God! can I not grasp
+Them with a tighter clasp?
+O God! can I not save
+One from the pitiless wave?
+Is all that we see or seem
+But a dream within a dream?`;
+
+
+
 var moby_dick_36 = `It was not a great while after the affair of the pipe, that one morning shortly after breakfast, Ahab, as was his wont, ascended the cabin-gangway to the deck. There most sea-captains usually walk at that hour, as country gentlemen, after the same meal, take a few turns in the garden.
 
 Soon his steady, ivory stride was heard, as to and fro he paced his old rounds, upon planks so familiar to his tread, that they were all over dented, like geological stones, with the peculiar mark of his walk. Did you fixedly gaze, too, upon that ribbed and dented brow; there also, you would see still stranger foot-prints- the foot-prints of his one unsleeping, ever-pacing thought.

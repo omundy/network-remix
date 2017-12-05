@@ -63,7 +63,7 @@ function init_page(){
 	// start app
 	//$("#sample-sportsball-csv").trigger("click");
 	//$("#sample-colors-csv").trigger("click");
-	$("#sample-moby-dick-36").trigger("click");
+	$("#sample-poe-dream").trigger("click");
 }
 
 

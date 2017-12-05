@@ -181,6 +181,9 @@ $("#sample-moby-dick-36").on("click", function(){
 $("#sample-minima-moralia").on("click", function(){
     update_input_text(minima_moralia);
 });
+$("#sample-poe-dream").on("click", function(){
+    update_input_text(poe_dream);
+});
 
 // clear
 $("#clear").on("click", function(){
