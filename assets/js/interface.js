@@ -78,6 +78,7 @@ function saveRangeSliderValue(element) {
 	output[textContent] = element.value + " " + type;
 }
 function updateRangeSliderTotal(id,currentTotalWords){
+    console.log("updateRangeSliderTotal()",id,currentTotalWords)
 	// update word-limit-slider max
 	$(id +' input').attr('max',details.currentTotalWords);
 	// temp: limit word-limit-slider max to 200 words

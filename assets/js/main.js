@@ -61,7 +61,9 @@ function init_page(){
 		eval_input();
 	});
 	// start app
-	$("#sample-sportsball-csv").trigger("click");
+	//$("#sample-sportsball-csv").trigger("click");
+	//$("#sample-colors-csv").trigger("click");
+	$("#sample-moby-dick-36").trigger("click");
 }
 
 
@@ -155,7 +157,6 @@ function strTableOrPlain(str){
 		// determine if we need a custom format
 		if (str.slice(0,1) == "*"){
 			strType.customTable = 1;
-			console.log(str.slice(0,1))
 			break;
 		}
 
