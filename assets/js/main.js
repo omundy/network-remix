@@ -58,12 +58,24 @@ function init_page(){
 	// add rangeslider
 	addRangeSlider();
 	// listen for keyup or change in textarea
-	$('#input_text').on('keyup change', function() {
-		eval_input();
+	$('#input_text').on('keyup change', function(e) {
+		var k = e.keyCode || e.which;
+		if (   k !== 7 /* tab */
+			&& k !== 13 /* enter */
+			&& k !== 16 /* shift */
+			&& k !== 17 /* control */
+			&& k !== 17 /* option */
+			&& k !== 20 /* capslock */
+			&& k !== 37 /* left arrow */
+			&& k !== 38 /* up arrow */
+			&& k !== 39 /* right arrow */
+			&& k !== 40 /* down arrow */
+		)
+			eval_input();
 	});
 	// start app
-	$("#sample-sportsball-csv").trigger("click");
-	//$("#sample-colors-csv").trigger("click");
+	//$("#sample-sportsball-csv").trigger("click");
+	$("#sample-colors-csv").trigger("click");
 	//$("#sample-poe-dream").trigger("click");
 }
 
@@ -91,13 +103,14 @@ function eval_input(){
     	details.format = strTableOrPlain(str);
 		// update format
 	    $('#format-detected').html(details.format);
-		// update the format button
-		//update_format_btn(details.format);
 
+		//console.log("str",str);
 		// format plain text as a table
 		if (details.format == "plain"){
 			str = parseText(str,prefs.maxWords,prefs.maxEdges);
 		}
+		//console.log("str",str);
+
 		// and parse it using papaparse: http://papaparse.com/docs
 		var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
 		var p = Papa.parse(str,pconfig);
@@ -124,20 +137,28 @@ function eval_input(){
 
 				update_data_table(p.data,headerRow);
 				display_msg('');
-				update_graph(table);
 
+				try {
+					update_graph(table);
+				} catch(e){
+					console.log(e);
+				}
 			} else {
 				update_data_table(p.data);
 				display_msg('');
-				update_graph(table);
+				try {
+					update_graph(table);
+				} catch(e){
+					console.log(e);
+				}
 			}
 		} else {
 			console.log("************************* Papaparse ERRORS *************************");
 			console.log(JSON.stringify(p.errors));
-			var msg = "Note: Input with commas or tabs only will be interpreted as table data, while other punctuation causes plain text analysis.";
-			if (str !== "") display_msg('<div class="alert alert-warning">'+ msg +'</div>');
 			update_data_table(p.data); // try anyway
 		}
+		var msg = "Note: Input with commas or tabs only will be interpreted as table data, while other punctuation causes plain text analysis.";
+		if (str == "") display_msg('<div class="alert alert-warning">'+ msg +'</div>');
 	}
 	// remove graph if string empty
 	if (str == "")
@@ -184,7 +205,7 @@ function strTableOrPlain(str){
 
 		// early exit option
 		// if period or other punctuation found then return as 'plain'
-		if (text[i].periods >= 1 || text[i].questions >= 1 || text[i].exclaimations >= 1) {
+		if (text[i].periods >= 1 || text[i].questions >= 1 || text[i].exclaimations >= 1 || text[i].commas == 0) {
 			console.log( ' --- format notes --- punctuation found, format: plain' );
 			return 'plain';
 		}
@@ -245,7 +266,7 @@ function update_graph(table){
 
 	clear_graph();
 	// instead look to see if it exists and redraw
-
+//return 1;
 	//redraw_graph(dataset);
 	draw_graph(dataset) ;
 }
@@ -263,26 +284,27 @@ function update_graph(table){
  * 	@return {Object} dataset - a json object
  */
 function convertTwoColTable(table){
+	//console.log("convertTwoColTable",table);
 
 	var twoColTable = [];
 	// for each row in table
-	for (var row in table){
-		// if the row has more than two relationships
-		if (table[row].length > 2){
-			// for each col in row
-			for (var col in table[row]){
-				col = parseInt(col);
-				if ( col < table[row].length-1 ){
-					twoColTable.push([ table[row][col], table[row][col+1] ]);
-				}
+	for (var i=0; i<table.length; i++){
+		// for each col in the row
+		for (var j=0; j<table[i].length; j++){
+			// if there is another column
+			if ( prop(table[i][j+1]) ){
+				//console.log("row",table[i],"col", table[i][j], table[i][j+1]);
+				// then add them both as an array
+				twoColTable.push([
+					String(table[i][j]).trim(),
+					String(table[i][j+1]).trim()
+				]);
 			}
-		} else {
-			twoColTable.push(table[row])
 		}
 	}
 	// reporting
-	//console.log("  input --> original table --> " + JSON.stringify(table) );
-	//console.log("  input --> 2 column table --> " + JSON.stringify(twoColTable) );
+	console.log("  input --> original table --> " + JSON.stringify(table) );
+	console.log("  input --> 2 column table --> " + JSON.stringify(twoColTable) );
 	return twoColTable;
 }
 
@@ -303,7 +325,7 @@ function convert_table_to_d3_network(table){
 
 	// make sure this is a two-column table
 	table = convertTwoColTable(table);
-	//console.log("table",table)
+	console.log("table",table)
 
 	// for each row in table
 	for (var row in table){
@@ -320,7 +342,7 @@ function convert_table_to_d3_network(table){
 
 			// clean node name
 			var node = table[row][col].trim();
-			//console.log(row,col,node);
+			console.log(row,col,node);
 
 			// if node does not yet exist
 			if (node_order.indexOf(node) < 0){

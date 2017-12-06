@@ -25,10 +25,10 @@ h6 .caret { content: " "; width: 0; height: 0; display: inline-block; margin-lef
     border-left: 4px solid rgba(0, 0, 0, 0); border-right: 4px solid rgba(0, 0, 0, 0); border-top: 4px solid; }
 h6 .h6-record-display { font-size: 90%; color: #aaa;}
 
-/* HIDE ON LOAD
+/* HIDE ON LOAD */
 
 #data-table { display: none; }
-#word-frequency { display: none; }*/
+#word-frequency { display: none; }
 
 /* D3 */
 

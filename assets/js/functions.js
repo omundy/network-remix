@@ -231,10 +231,14 @@ function charLimit(str, limit){
  *  Find all words in a text or array, score by occurance
  */
 function parseText(text,wordLimit=-1,connectionLimit=3){
-    //console.log("parseText()",wordLimit,connectionLimit)
+    //console.log("parseText()",text,wordLimit,connectionLimit)
 
     // split ("tokenize") text into array of words
     var textArr = text.trim().split(wordSeparators);
+
+    // if only one word, return early
+    if (textArr.length === 1)
+        return text;
 
     // update total current words (before limiting them below for the graph)
     details.currentTotalWords = textArr.length;
@@ -243,13 +247,11 @@ function parseText(text,wordLimit=-1,connectionLimit=3){
 
     // limit number of words
     textArr = textArr.slice(0,wordLimit); // this is probably slower
-    //console.log("textArr",textArr.length);
+    //console.log("textArr",textArr,textArr.length);
 
     // sort words by occurrence, do not remove stop words
-    var topWords = wordsByOccurrence(textArr,prefs.removeStopWords,false);
-
-    //console.log("topWords.length = "+ topWords.length, ", wordLimit = ", wordLimit);
-    //console.log( JSON.stringify(topWords) );
+    var topWords = wordsByOccurrence(textArr,false,false);
+    //console.log("topWords.length = "+ topWords.length, ", wordLimit = ", wordLimit, JSON.stringify(topWords) );
 
     // find the positions of each of these topWords
     for (var i=0; i<topWords.length; i++){
@@ -264,7 +266,7 @@ function parseText(text,wordLimit=-1,connectionLimit=3){
         // store occurances of this word in topWords[i]
         topWords[i].indices = getAllIndexes(textArr,word);
     }
-    //console.log("topWords",topWords);
+    //console.log("topWords",JSON.stringify(topWords));
 
     var table = [];
     var table_tracker = [];
@@ -272,13 +274,14 @@ function parseText(text,wordLimit=-1,connectionLimit=3){
 
     // loop through top words again to find previous and next words
     for (var i=0; i<topWords.length; i++){
-        //console.log(topWords[i]);
+        //console.log("topWords[i]",topWords[i]);
 
         // limit by connections, turning off for now because not sure if this is a good feature
         //if ( topWords[i].indices.length < connectionLimit ) continue;
 
         // loop through indices of that word
         for (var j in topWords[i].indices){
+            //console.log(" --> topWords[i].indices",i,topWords[i].indices);
 
             // if word index exists AND there are no periods
             if ( topWords[i].key && topWords[i].key.indexOf('.') === -1){
@@ -286,14 +289,14 @@ function parseText(text,wordLimit=-1,connectionLimit=3){
                 // store info
                 var word = topWords[i].key;
                 var pos = topWords[i].indices[j];
-                //console.log( textArr[pos] );
+                //console.log( " --> textArr[pos]",textArr[pos] );
 
                 // if previous exists AND there are no periods AND it is a string
                 if ( prop(textArr[pos-1]) && textArr[pos-1].indexOf('.') === -1 && typeof textArr[pos-1] === "string" ){
 
                     // create a "tracking string" with both words and their positions
                     var track = textArr[pos-1] +"-"+ String(pos-1) +"_"+ word +"-" + pos;
-                    //console.log(track);
+                    //console.log(" --> track",track);
 
                     // if tracking string doesn't exist in tracking array
                     if ( table_tracker.indexOf(track) === -1 ){
@@ -305,10 +308,11 @@ function parseText(text,wordLimit=-1,connectionLimit=3){
                         table_str += "\n"+arr.toString();
                     }
                 } else {
+                    //console.log(" --> break");
                     break; // ?
                 }
-                // if next exists AND there are no periods AND it is a string
-                if ( prop(textArr[pos+1]) && textArr[pos+1].indexOf('.') === -1 && typeof textArr[pos+1] === "string" ){
+                // if next exists AND it is a string
+                if ( prop(textArr[pos+1]) && typeof textArr[pos+1] === "string" ){
 
                     // create a "tracking string" with both words and their positions
                     var track = word +"-" + pos +"_"+ textArr[pos+1] +"-"+ String(pos+1);
@@ -337,6 +341,7 @@ function parseText(text,wordLimit=-1,connectionLimit=3){
     // return the table
     return table_str.trim();
 }
+
 
 
 /**
