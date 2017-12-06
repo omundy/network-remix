@@ -178,7 +178,9 @@ var unicodePunctuationRe = "!-#%-*,-/:;?@\\[-\\]_{}\xa1\xa7\xab\xb6\xb7\xbb\xbf\
     words = []
     ;
 
-var stopWords = /^(i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|they|them|their|theirs|themselves|what|which|who|whom|whose|this|that|these|those|am|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|will|would|should|can|could|ought|i'm|you're|he's|she's|it's|we're|they're|i've|you've|we've|they've|i'd|you'd|he'd|she'd|we'd|they'd|i'll|you'll|he'll|she'll|we'll|they'll|isn't|aren't|wasn't|weren't|hasn't|haven't|hadn't|doesn't|don't|didn't|won't|wouldn't|shan't|shouldn't|can't|cannot|couldn't|mustn't|let's|that's|who's|what's|here's|there's|when's|where's|why's|how's|a|an|the|and|but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|through|during|before|after|above|below|to|from|up|upon|down|in|out|on|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|say|says|said|shall)$/,
+var stopWords = /^(i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|they|them|their|theirs|themselves|what|which|who|whom|whose|this|that|these|those|am|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|will|would|should|can|could|ought|i'm|you're|he's|she's|it's|we're|they're|i've|you've|we've|they've|i'd|you'd|he'd|she'd|we'd|they'd|i'll|you'll|he'll|she'll|we'll|they'll|isn't|aren't|wasn't|weren't|hasn't|haven't|hadn't|doesn't|don't|didn't|won't|wouldn't|shan't|shouldn't|can't|cannot|couldn't|mustn't|let's|that's|who's|what's|here's|there's|when's|where's|why's|how's|a|an|the|and|but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|through|during|before|after|above|below|to|from|up|upon|down|in|out|on|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|say|says|said|shall)$/;
+
+var stopWordsRe = new RegExp("[" + stopWords + "]", "g"),
     punctuation = new RegExp("[" + unicodePunctuationRe + "]", "g"),
     wordSeparators = /[ \f\n\r\t\v\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000\u3031-\u3035\u309b\u309c\u30a0\u30fc\uff70]+/g,
     discard = /^(@|https?:|\/\/)/
@@ -193,9 +195,10 @@ function wordsByOccurrence(text,rmStops,rmPunct) {
     if ( !Array.isArray(text) )                 // if string
         text.split(wordSeparators);             // convert to array
     text.forEach(function(word) {
+        //console.log("word=",word)
         if (discard.test(word)) return;         // remove links
         if (rmPunct) word = word.replace(punctuation, "");   // remove punctuation
-        if (rmStops && stopWords.test(word.toLowerCase())) return;  // do|not include stop words
+        if (rmStops && stopWordsRe.test(word.toLowerCase())) return;  // do|not include stop words
         word = word.substr(0, maxLength);       // remove very long words
         cases[word.toLowerCase()] = word;       // convert to lowercase
         tags[word = word.toLowerCase()] = (tags[word] || 0) + 1;    // count words
@@ -237,7 +240,7 @@ function parseText(text,wordLimit=-1,connectionLimit=3){
     textArr = textArr.slice(0,wordLimit); // this is probably slower
 
     // sort words by occurrence, do not remove stop words
-    var topWords = wordsByOccurrence(textArr,false,false);
+    var topWords = wordsByOccurrence(textArr,prefs.removeStopWords,false);
 
     console.log("topWords.length = "+ topWords.length, ", wordLimit = ", wordLimit);
     //console.log( JSON.stringify(topWords) );

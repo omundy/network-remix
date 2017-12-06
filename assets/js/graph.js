@@ -134,7 +134,7 @@ function draw_graph(data) {
         .data(data.links)
         .enter()
         .append("line")
-        .attr("stroke", "black")
+        //.attr("stroke", "black")
 
 
 	// create a linear scale for radius
@@ -144,10 +144,12 @@ function draw_graph(data) {
 
 
 	var rColor = Math.floor(Math.random()*255);
-	var nodeFill = "rgba("+ rColor +","+ rColor +",255, .75)";
+	var nodeFill = "rgba("+ rColor +","+ rColor +",255, 1)";
 	var nodeStroke = "rgba(255, 0," + rColor +", 0.25)";
 	var textFill = "rgba(0,0,0,1)";
 
+    nodeFill = "rgba(160,160,160,1)";
+    nodeStroke = nodeFill;
 
     var node = svg.append("g")
         .attr("class", "nodes")
@@ -157,7 +159,7 @@ function draw_graph(data) {
         	.attr("r", function(d){ return rScale(d.r) })
 			.attr("fill",nodeFill)
 			.attr("stroke",nodeStroke)
-			.attr("stroke-width", 5)
+			.attr("stroke-width", 1)
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)

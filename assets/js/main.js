@@ -42,7 +42,8 @@ var table = [],		// main data table; An array of arrays
 	prefs = {		// preferences
 		"minWords":1,
 		"maxWords": 100,
-		"maxEdges": 200
+		"maxEdges": 200,
+		"removeStopWords": false
 	};
 
 

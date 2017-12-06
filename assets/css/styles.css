@@ -33,17 +33,22 @@ h6 .h6-record-display { font-size: 90%; color: #aaa;}
 /* D3 */
 
 #graph { border: 1px solid #ddd; }
-.node {
+.nodes {
     fill: #ccc;
     stroke: #fff;
     stroke-width: 2px;
 }
-.link {
-    stroke: #777;
-    stroke-width: 2px;
+.links {
+    stroke: #aaa;
+    stroke-width: 1px;
 }
 div.tooltip { position: absolute; padding: 7px; border: 0px; border-radius: 4px; pointer-events: none;
     font-size: 12px; color:#fff; background: rgba(0,0,0,0.7); }
+
+.node.fixed {
+    fill: #f00;
+}
+
 /* make viz responsive
 .svg-container {
     display: inline-block;
