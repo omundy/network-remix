@@ -58,14 +58,16 @@ function addRangeSlider(){
     });
 }
 /**
- *	Saves values from rangeslider(s)
+ *	Saves values after user drags rangeslider
  */
 function saveRangeSliderValue(element) {
 
-	// display output
+	// get content
 	var textContent = ('textContent' in document) ? 'textContent' : 'innerText';
+    // get node with output
 	var output = element.parentNode.getElementsByTagName('output')[0] || element.parentNode.parentNode.getElementsByTagName('output')[0];
-	var type;
+    // which rangeslider was updated
+    var type;
 
 	// update preferences
 	if (element.id == "word-limit"){
@@ -78,9 +80,10 @@ function saveRangeSliderValue(element) {
 	output[textContent] = element.value + " " + type;
 }
 function updateRangeSliderTotal(id,currentTotalWords){
-    console.log("updateRangeSliderTotal()",id,currentTotalWords)
+    //console.log("updateRangeSliderTotal()",id,currentTotalWords)
+    
 	// update word-limit-slider max
-	$(id +' input').attr('max',details.currentTotalWords);
+	$(id +' input').attr('max',currentTotalWords);
 	// temp: limit word-limit-slider max to 200 words
 	//$('.range-slider-word-limit input').attr('max',200);
 	// update rangeslider

@@ -106,8 +106,7 @@ function eval_input(){
 		update_stats(str);
 		// if no errors
 		if (p.errors.length < 1){
-
-			console.log("p.data",p.data);
+			//console.log("p.data",p.data);
 
 			// if we have a custom format
 			if (details.format == "customTable"){
