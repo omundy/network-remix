@@ -112,7 +112,7 @@ function eval_input(){
 		//console.log("str",str);
 
 		// and parse it using papaparse: http://papaparse.com/docs
-		var pconfig = { "dynamicTyping":true, "skipEmptyLines":true };
+		var pconfig = { "dynamicTyping":true, "skipEmptyLines":true, "delimiter":"" };
 		var p = Papa.parse(str,pconfig);
 		// only proceed if there are no errors
 		//console.log("INPUT CHANGE: "JSON.stringify(p));

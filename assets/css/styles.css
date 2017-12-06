@@ -74,3 +74,6 @@ div.tooltip { position: absolute; padding: 7px; border: 0px; border-radius: 4px;
 .rangeslider__handle { width: 15px; height: 15px; }
 .rangeslider__handle:after { width: 8px; height: 8px; }
 .range-slider output {  display: inline-block; width: 90px; margin: 0px 0 0 5px }
+
+
+.footer { text-align: center;}
