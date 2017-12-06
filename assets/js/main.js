@@ -62,9 +62,9 @@ function init_page(){
 		eval_input();
 	});
 	// start app
-	//$("#sample-sportsball-csv").trigger("click");
+	$("#sample-sportsball-csv").trigger("click");
 	//$("#sample-colors-csv").trigger("click");
-	$("#sample-poe-dream").trigger("click");
+	//$("#sample-poe-dream").trigger("click");
 }
 
 
@@ -108,8 +108,11 @@ function eval_input(){
 		if (p.errors.length < 1){
 			//console.log("p.data",p.data);
 
+			var headerRow = [];
+
 			// if we have a custom format
 			if (details.format == "customTable"){
+
 				// store and remove header row
 				var headerRow = p.data[0];
 				p.data.shift();
@@ -118,11 +121,16 @@ function eval_input(){
 					// remove first index
 
 				}
-			}
 
-			update_data_table(p.data);
-			display_msg('');
-			update_graph(table);
+				update_data_table(p.data,headerRow);
+				display_msg('');
+				update_graph(table);
+
+			} else {
+				update_data_table(p.data);
+				display_msg('');
+				update_graph(table);
+			}
 		} else {
 			console.log("************************* Papaparse ERRORS *************************");
 			console.log(JSON.stringify(p.errors));
@@ -202,7 +210,7 @@ function strTableOrPlain(str){
 /**
  *	Update the data-table
  */
-function update_data_table(arr){
+function update_data_table(arr,headerRow=[]){
 	// store data
 	table = arr;
     // store current number of rows in data table
@@ -210,7 +218,7 @@ function update_data_table(arr){
     // display data length in table headings
     $('#data-table-records').html("("+ details.currentTableLength + ")");
 	// write table
-	$("#data-table").html( create_table(table) );
+	$("#data-table").html( display_table(table,headerRow) );
 }
 
 

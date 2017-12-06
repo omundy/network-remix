@@ -81,7 +81,7 @@ function saveRangeSliderValue(element) {
 }
 function updateRangeSliderTotal(id,currentTotalWords){
     //console.log("updateRangeSliderTotal()",id,currentTotalWords)
-    
+
 	// update word-limit-slider max
 	$(id +' input').attr('max',currentTotalWords);
 	// temp: limit word-limit-slider max to 200 words
@@ -94,7 +94,7 @@ function updateRangeSliderTotal(id,currentTotalWords){
 /**
  *	Display CSV table in HTML
  */
-function create_table(arr,headers=[],limit=1000){
+function display_table(arr,headers=[],limit=1000){
 
 	var str = '<table class="table table-sm">';
 

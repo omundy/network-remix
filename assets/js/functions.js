@@ -163,7 +163,7 @@ function update_stats(){
     $("#word-frequency-records").html("("+ wordFreqArr.length + ")");
     // display data in tables
     //$('#word-frequency').html(toTable(wordFreqArr, ['word', 'frequency']));
-    $('#word-frequency').html(create_table(wordFreqArr, ['word','frequency']));
+    $('#word-frequency').html(display_table(wordFreqArr, ['word','frequency']));
     $('#currentTotalChars').html(details.currentTotalChars);
     $('#currentTotalWords').html(details.currentTotalWords);
     $('#currentTotalUniqueWords').html(details.currentTotalUniqueWords);
