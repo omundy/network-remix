@@ -9,8 +9,8 @@ table { font-size: 90%; }
 thead, th { text-align: center; font-weight: bold;}
 td { text-align: center;}
 td.str-field { text-align: left;}
-td.data-field { text-align: right; }
-td.num { color: #999 !important; }
+td.dataField { background:inherit; text-align: right !important; }
+td.num { color: #999; !important; }
 
 /* FORMS/INTERFACE */
 

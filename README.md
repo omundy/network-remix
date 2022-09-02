@@ -7,3 +7,7 @@ A project by [Eduardo Navas](https://github.com/navasse) with [Owen Mundy](https
 
 ### License
 MIT
+
+
+
+![img](assets/img/2017-network-remix-moby-dick.png)
